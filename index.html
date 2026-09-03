@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MAS Account Christmas Party 2026 — Accenture</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --purple: #A100FF;
+      --purple-dark: #7400B8;
+      --purple-light: #C84BFF;
+      --purple-faint: #F5E6FF;
+      --black: #1A1A1A;
+      --grey-dark: #3D3D3D;
+      --grey-mid: #8C8C8C;
+      --grey-light: #E8E8E8;
+      --grey-bg: #F7F7F7;
+      --white: #FFFFFF;
+      --green: #00C853;
+      --red: #E53935;
+    }
+    body { font-family: 'Inter', sans-serif; background: var(--grey-bg); color: var(--black); min-height: 100vh; }
+
+    /* HEADER */
+    header { background: var(--black); padding: 0 40px; display: flex; align-items: center; justify-content: space-between; height: 64px; position: sticky; top: 0; z-index: 100; }
+    .logo { display: flex; align-items: center; }
+    .logo-mark { display: none; }
+    .acc-logo { display: inline-flex; align-items: baseline; position: relative; font-family: 'Arial Black', Arial, sans-serif; font-weight: 900; letter-spacing: -0.02em; }
+    .acc-logo .acc-t-wrap { position: relative; display: inline-block; }
+    .acc-logo .acc-chevron { position: absolute; left: 50%; transform: translateX(-40%); }
+    .header-right { display: flex; align-items: center; gap: 14px; }
+    .header-user { color: var(--grey-mid); font-size: 12px; }
+    .header-user span { color: var(--purple-light); font-weight: 600; }
+    .header-badge { background: var(--purple); color: var(--white); font-size: 10px; font-weight: 700; padding: 4px 10px; border-radius: 2px; letter-spacing: 0.08em; text-transform: uppercase; }
+    .btn-logout { background: none; border: 1px solid #444; color: var(--grey-mid); font-size: 11px; padding: 4px 10px; border-radius: 2px; cursor: pointer; font-family: 'Inter', sans-serif; transition: color 0.15s, border-color 0.15s; }
+    .btn-logout:hover { border-color: var(--grey-mid); color: var(--white); }
+
+    /* HERO */
+    .hero { background: var(--black); color: var(--white); padding: 56px 40px 64px; position: relative; overflow: hidden; }
+    .hero::before { content: ''; position: absolute; top: -80px; right: -80px; width: 420px; height: 420px; background: radial-gradient(circle, rgba(161,0,255,0.32) 0%, transparent 70%); pointer-events: none; }
+    .hero::after { content: '🎄'; position: absolute; bottom: 16px; right: 56px; font-size: 110px; opacity: 0.07; pointer-events: none; }
+    .hero-eyebrow { font-size: 11px; font-weight: 700; color: var(--purple-light); letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 14px; }
+    .hero h1 { font-size: clamp(24px, 4vw, 42px); font-weight: 700; line-height: 1.18; max-width: 600px; margin-bottom: 6px; }
+    .hero h1 span { color: var(--purple-light); }
+    .hero-sub { font-size: 14px; color: var(--grey-mid); margin-bottom: 28px; }
+    .hero-meta { display: flex; gap: 32px; flex-wrap: wrap; margin-top: 24px; }
+    .hero-meta-item .label { font-size: 10px; color: var(--grey-mid); font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; }
+    .hero-meta-item .value { font-size: 15px; font-weight: 600; color: var(--white); margin-top: 2px; }
+
+    /* TABS */
+    .tab-bar { background: var(--white); border-bottom: 1px solid var(--grey-light); padding: 0 40px; display: flex; overflow-x: auto; }
+    .tab-btn { padding: 15px 22px; font-size: 13px; font-weight: 500; color: var(--grey-mid); border: none; border-bottom: 3px solid transparent; background: none; cursor: pointer; white-space: nowrap; transition: color 0.15s, border-color 0.15s; font-family: 'Inter', sans-serif; }
+    .tab-btn:hover { color: var(--black); }
+    .tab-btn.active { color: var(--purple); border-bottom-color: var(--purple); font-weight: 600; }
+
+    /* CONTENT */
+    .content { max-width: 960px; margin: 0 auto; padding: 40px; }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+    .section-title { font-size: 19px; font-weight: 700; margin-bottom: 4px; }
+    .section-sub { font-size: 13px; color: var(--grey-mid); margin-bottom: 24px; line-height: 1.5; }
+
+    /* CARD */
+    .card { background: var(--white); border: 1px solid var(--grey-light); border-radius: 4px; padding: 28px; }
+
+    /* FORMS */
+    .form-group { margin-bottom: 16px; }
+    .form-label { display: block; font-size: 11px; font-weight: 700; color: var(--grey-dark); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.07em; }
+    .form-input, .form-select, .form-textarea { width: 100%; border: 1px solid var(--grey-light); border-radius: 3px; padding: 10px 13px; font-size: 14px; font-family: 'Inter', sans-serif; color: var(--black); background: var(--white); transition: border-color 0.15s, box-shadow 0.15s; outline: none; }
+    .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--purple); box-shadow: 0 0 0 3px rgba(161,0,255,0.1); }
+    .form-textarea { resize: vertical; min-height: 78px; }
+    .form-hint { font-size: 11px; color: var(--grey-mid); margin-top: 5px; line-height: 1.5; }
+    .form-error { font-size: 12px; color: var(--red); margin-top: 5px; display: none; }
+    .form-error.show { display: block; }
+
+    /* BUTTONS */
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 7px; padding: 10px 22px; border-radius: 3px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; transition: background 0.15s, opacity 0.15s; font-family: 'Inter', sans-serif; }
+    .btn-primary { background: var(--purple); color: var(--white); }
+    .btn-primary:hover { background: var(--purple-dark); }
+    .btn-outline { background: transparent; color: var(--purple); border: 1.5px solid var(--purple); }
+    .btn-outline:hover { background: var(--purple-faint); }
+    .btn-ghost { background: transparent; color: var(--grey-dark); border: 1px solid var(--grey-light); }
+    .btn-ghost:hover { background: var(--grey-light); }
+    .btn-danger { background: var(--red); color: var(--white); }
+    .btn-danger:hover { background: #c62828; }
+    .btn-sm { padding: 6px 14px; font-size: 12px; }
+    .btn-full { width: 100%; }
+
+    /* AUTH */
+    .auth-wrap { min-height: calc(100vh - 64px); display: flex; align-items: center; justify-content: center; padding: 40px 20px; background: var(--grey-bg); }
+    .auth-card { background: var(--white); border: 1px solid var(--grey-light); border-radius: 4px; padding: 40px; width: 100%; max-width: 440px; }
+    .auth-brand { display: flex; align-items: center; gap: 12px; margin-bottom: 28px; }
+    .auth-brand-mark { display: none; }
+    .auth-icon { font-size: 40px; margin-bottom: 14px; }
+    .auth-title { font-size: 21px; font-weight: 700; margin-bottom: 6px; }
+    .auth-sub { font-size: 13px; color: var(--grey-mid); margin-bottom: 24px; line-height: 1.55; }
+    .auth-divider { border: none; border-top: 1px solid var(--grey-light); margin: 20px 0; }
+    .auth-switch { text-align: center; font-size: 12px; color: var(--grey-mid); margin-top: 14px; }
+    .auth-switch a { color: var(--purple); cursor: pointer; font-weight: 600; }
+    .info-box { background: var(--purple-faint); border-left: 3px solid var(--purple); border-radius: 2px; padding: 12px 14px; margin-bottom: 18px; font-size: 12px; color: var(--purple-dark); line-height: 1.6; }
+
+    /* PROFILE */
+    .profile-header { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; padding-bottom: 22px; border-bottom: 1px solid var(--grey-light); }
+    .profile-avatar { width: 52px; height: 52px; background: var(--purple); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; color: var(--white); flex-shrink: 0; }
+    .profile-name { font-size: 17px; font-weight: 700; }
+    .profile-meta { font-size: 12px; color: var(--grey-mid); margin-top: 3px; }
+    .confirmed-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 2px; background: #E8FFF1; color: var(--green); text-transform: uppercase; letter-spacing: 0.06em; margin-left: auto; }
+
+    /* AVOID TAGS */
+    .tag-list { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 10px; min-height: 10px; }
+    .avoid-tag { display: inline-flex; align-items: center; gap: 6px; background: #FFF3F3; border: 1px solid #FFCDD2; color: #C62828; font-size: 12px; font-weight: 500; padding: 5px 10px; border-radius: 2px; }
+    .avoid-tag button { background: none; border: none; color: #C62828; cursor: pointer; font-size: 15px; line-height: 1; padding: 0; opacity: 0.7; }
+    .avoid-tag button:hover { opacity: 1; }
+    .add-row { display: flex; gap: 8px; }
+    .add-row .form-input { flex: 1; }
+
+    /* SANTA */
+    .santa-card { background: var(--white); border: 1px solid var(--grey-light); border-radius: 4px; padding: 48px 36px; text-align: center; max-width: 460px; margin: 0 auto; }
+    .santa-big-icon { font-size: 60px; margin-bottom: 16px; }
+    .santa-locked-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+    .santa-locked-sub { font-size: 13px; color: var(--grey-mid); line-height: 1.6; }
+    .countdown-pill { display: inline-block; background: var(--purple-faint); border-radius: 3px; padding: 14px 24px; margin: 18px 0; }
+    .countdown-pill .days { font-size: 30px; font-weight: 700; color: var(--purple-dark); }
+    .countdown-pill .days-label { font-size: 11px; font-weight: 600; color: var(--purple); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 2px; }
+    .reveal-card { text-align: left; background: var(--white); border: 1px solid var(--grey-light); border-radius: 4px; padding: 36px; max-width: 480px; margin: 0 auto; }
+    .reveal-to-label { font-size: 12px; color: var(--grey-mid); text-align: center; margin-bottom: 4px; }
+    .reveal-name { font-size: 30px; font-weight: 700; color: var(--purple); text-align: center; margin-bottom: 28px; }
+    .reveal-section { background: var(--grey-bg); border-radius: 3px; padding: 18px; margin-bottom: 10px; }
+    .reveal-section-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--grey-mid); margin-bottom: 10px; }
+    .avoid-item-row { font-size: 13px; color: #C62828; display: flex; align-items: flex-start; gap: 7px; margin-bottom: 6px; }
+    .avoid-item-row::before { content: '🚫'; font-size: 12px; flex-shrink: 0; margin-top: 1px; }
+    .empty-note { font-size: 13px; color: var(--grey-mid); font-style: italic; }
+
+    /* ADMIN */
+    .admin-header { background: #111; padding: 0 40px; display: flex; align-items: center; justify-content: space-between; height: 64px; }
+    .admin-badge { background: #444; color: var(--grey-mid); font-size: 10px; font-weight: 700; padding: 4px 10px; border-radius: 2px; letter-spacing: 0.1em; text-transform: uppercase; }
+    .stats-row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 28px; }
+    .stat-card { background: var(--white); border: 1px solid var(--grey-light); border-radius: 4px; padding: 18px 20px; flex: 1; min-width: 110px; }
+    .stat-number { font-size: 26px; font-weight: 700; color: var(--purple); }
+    .stat-label { font-size: 11px; color: var(--grey-mid); margin-top: 1px; }
+    .admin-section { margin-bottom: 36px; }
+    .admin-section-title { font-size: 14px; font-weight: 700; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--grey-light); }
+    .table-wrap { border: 1px solid var(--grey-light); border-radius: 4px; overflow: hidden; background: var(--white); }
+    .att-table { width: 100%; border-collapse: collapse; }
+    .att-table th { background: var(--black); color: var(--white); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.09em; padding: 11px 14px; text-align: left; white-space: nowrap; }
+    .att-table td { padding: 10px 14px; font-size: 12px; border-bottom: 1px solid var(--grey-light); vertical-align: middle; }
+    .att-table tr:last-child td { border-bottom: none; }
+    .att-table tr:hover td { background: var(--grey-bg); }
+    .pairing-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px; margin-top: 14px; }
+    .pairing-card { background: var(--white); border: 1px solid var(--grey-light); border-radius: 3px; padding: 12px 14px; font-size: 13px; display: flex; align-items: center; gap: 8px; }
+    .pair-arrow { color: var(--purple); font-weight: 700; flex-shrink: 0; }
+    .form-row { display: flex; gap: 12px; flex-wrap: wrap; }
+    .form-row .form-group { flex: 1; min-width: 150px; }
+
+
+    /* MODAL */
+    .modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 400; align-items: center; justify-content: center; }
+    .modal-bg.open { display: flex; }
+    .modal-box { background: var(--white); border-radius: 4px; padding: 36px; width: 90%; max-width: 400px; text-align: center; }
+    .modal-box h3 { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
+    .modal-box p { font-size: 13px; color: var(--grey-mid); margin-bottom: 22px; line-height: 1.55; }
+
+    /* TOAST */
+    .toast { position: fixed; bottom: 24px; right: 24px; padding: 12px 18px; border-radius: 3px; font-size: 13px; font-weight: 500; opacity: 0; pointer-events: none; transition: opacity 0.2s; z-index: 500; color: var(--white); background: var(--black); }
+    .toast.show { opacity: 1; }
+    .toast.success { background: #1B5E20; }
+    .toast.error { background: #B71C1C; }
+
+    @media (max-width: 600px) {
+      header, .admin-header { padding: 0 20px; }
+      .hero { padding: 36px 20px 48px; }
+      .tab-bar { padding: 0 16px; }
+      .content { padding: 24px 16px; }
+      .auth-card { padding: 28px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════
+     HEADER (app only)
+═══════════════════════════════════════════ -->
+<header id="app-header" style="display:none;">
+  <div class="logo"><span class="acc-logo" style="font-size:18px;color:#fff;">accen<span class="acc-t-wrap">t<svg class="acc-chevron" width="10" height="9" viewBox="0 0 10 9" style="bottom:18px;"><polyline points="1,1 8,4.5 1,8" fill="none" stroke="#A100FF" stroke-width="2.2" stroke-linecap="butt" stroke-linejoin="miter"/></svg></span>ure</span></div>
+  <div class="header-right">
+    <span class="header-user">Signed in as <span id="hdr-username">—</span></span>
+    <span class="header-badge">MAS Account</span>
+    <button class="btn-logout" onclick="logout()">Sign out</button>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════════
+     AUTH SCREENS
+═══════════════════════════════════════════ -->
+<div id="auth-screen">
+
+  <!-- LANDING -->
+  <div id="s-landing" style="min-height:100vh;display:flex;flex-direction:column;">
+
+    <!-- colourful hero -->
+    <div style="flex:1;background:#fff;display:flex;align-items:center;justify-content:center;padding:60px 20px;position:relative;overflow:hidden;">
+      <!-- decorative circles -->
+      <div style="position:absolute;top:-80px;right:-80px;width:380px;height:380px;background:radial-gradient(circle,rgba(161,0,255,0.18) 0%,transparent 70%);pointer-events:none;"></div>
+      <div style="position:absolute;bottom:-60px;left:-60px;width:300px;height:300px;background:radial-gradient(circle,rgba(161,0,255,0.12) 0%,transparent 70%);pointer-events:none;"></div>
+      <!-- accent stripe top -->
+      <div style="position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#A100FF 0%,#CC66FF 50%,#A100FF 100%);"></div>
+
+      <div style="max-width:480px;width:100%;z-index:1;">
+        <!-- logo -->
+        <div style="margin-bottom:40px;">
+          <span class="acc-logo" style="font-size:24px;color:#1a1a1a;">accen<span class="acc-t-wrap">t<svg class="acc-chevron" width="13" height="12" viewBox="0 0 13 12" style="bottom:24px;"><polyline points="1,1 11,6 1,11" fill="none" stroke="#A100FF" stroke-width="2.8" stroke-linecap="butt" stroke-linejoin="miter"/></svg></span>ure</span>
+          <span style="font-size:12px;font-weight:600;color:#888;margin-left:8px;vertical-align:middle;">MAS Account</span>
+        </div>
+
+        <!-- headline -->
+        <h1 style="font-size:clamp(32px,6vw,52px);font-weight:900;color:#1a1a1a;line-height:1.1;margin-bottom:16px;font-family:'Arial Black',Arial,sans-serif;">Christmas<br/><span style="color:#A100FF;">Gift Exchange</span></h1>
+        <p style="font-size:14px;color:#555;margin-bottom:36px;line-height:1.6;">Secret Santa for the MAS Account team.<br/>Register to confirm your spot and get your assignment.</p>
+
+        <!-- countdown timer -->
+        <div style="margin-bottom:32px;">
+          <div style="font-size:11px;font-weight:700;color:#A100FF;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:12px;">Counting down to the party 🎉</div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <div style="background:#fff;border:1px solid rgba(161,0,255,0.2);border-radius:4px;padding:12px 16px;min-width:64px;text-align:center;">
+              <div id="cd-days" style="font-size:28px;font-weight:900;color:#A100FF;font-family:'Arial Black',Arial,sans-serif;line-height:1;">--</div>
+              <div style="font-size:10px;font-weight:600;color:#aaa;text-transform:uppercase;letter-spacing:0.08em;margin-top:2px;">Days</div>
+            </div>
+            <div style="background:#fff;border:1px solid rgba(161,0,255,0.2);border-radius:4px;padding:12px 16px;min-width:64px;text-align:center;">
+              <div id="cd-hours" style="font-size:28px;font-weight:900;color:#A100FF;font-family:'Arial Black',Arial,sans-serif;line-height:1;">--</div>
+              <div style="font-size:10px;font-weight:600;color:#aaa;text-transform:uppercase;letter-spacing:0.08em;margin-top:2px;">Hours</div>
+            </div>
+            <div style="background:#fff;border:1px solid rgba(161,0,255,0.2);border-radius:4px;padding:12px 16px;min-width:64px;text-align:center;">
+              <div id="cd-mins" style="font-size:28px;font-weight:900;color:#A100FF;font-family:'Arial Black',Arial,sans-serif;line-height:1;">--</div>
+              <div style="font-size:10px;font-weight:600;color:#aaa;text-transform:uppercase;letter-spacing:0.08em;margin-top:2px;">Mins</div>
+            </div>
+            <div style="background:#fff;border:1px solid rgba(161,0,255,0.2);border-radius:4px;padding:12px 16px;min-width:64px;text-align:center;">
+              <div id="cd-secs" style="font-size:28px;font-weight:900;color:#A100FF;font-family:'Arial Black',Arial,sans-serif;line-height:1;">--</div>
+              <div style="font-size:10px;font-weight:600;color:#aaa;text-transform:uppercase;letter-spacing:0.08em;margin-top:2px;">Secs</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- decorative icons -->
+        <div style="font-size:36px;margin-bottom:32px;letter-spacing:8px;">🎄🎁🎅🎁🎄</div>
+
+        <!-- meta pills -->
+        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:36px;">
+          <span style="background:#fff;border:1px solid rgba(161,0,255,0.3);color:#7400B8;font-size:12px;font-weight:600;padding:6px 14px;border-radius:2px;">📅 Friday, 27 Nov 2026</span>
+          <span style="background:#fff;border:1px solid #ddd;color:#555;font-size:12px;font-weight:600;padding:6px 14px;border-radius:2px;">📍 Location TBC</span>
+        </div>
+
+        <!-- CTA buttons -->
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <button class="btn btn-primary btn-full" style="font-size:14px;padding:14px 24px;" onclick="go('s-register')">✅ I'm coming — Register now</button>
+          <button class="btn btn-full" style="background:#fff;border:1px solid #ddd;color:#1a1a1a;font-size:14px;padding:14px 24px;" onclick="go('s-login')">Already registered — Sign in</button>
+        </div>
+
+        <div style="text-align:center;margin-top:28px;">
+          <a style="font-size:11px;color:#aaa;cursor:pointer;" onclick="openAdminModal()">Admin ›</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- bottom bar with decorative colour blocks -->
+    <div style="height:6px;background:linear-gradient(90deg,#A100FF 0%,#7400B8 25%,#A100FF 50%,#CC66FF 75%,#A100FF 100%);"></div>
+  </div>
+
+  <!-- REGISTER -->
+  <div id="s-register" class="auth-wrap" style="display:none;">
+    <div class="auth-card">
+      <div class="auth-brand"><span class="acc-logo" style="font-size:22px;color:#1a1a1a;">accen<span class="acc-t-wrap">t<svg class="acc-chevron" width="12" height="11" viewBox="0 0 12 11" style="bottom:22px;"><polyline points="1,1 10,5.5 1,10" fill="none" stroke="#A100FF" stroke-width="2.5" stroke-linecap="butt" stroke-linejoin="miter"/></svg></span>ure</span><span style="font-size:12px;font-weight:600;color:var(--grey-mid);margin-left:4px;">MAS Account</span></div>
+      <div class="auth-icon">🎉</div>
+      <div class="auth-title">Confirm Attendance</div>
+      <div class="auth-sub">Registering here means you're <strong>confirmed attending</strong> the party on 27 Nov 2026.</div>
+      <div class="info-box">📝 Your <strong>username is private</strong> — pick something only you'll remember. You'll use it to sign in and see your Secret Santa match later. Don't share it!</div>
+      <div class="form-group">
+        <label class="form-label">Your Accenture Email</label>
+        <input class="form-input" id="r-eid" type="email" placeholder="firstname.lastname@accenture.com" oninput="previewName()" />
+        <div id="r-name-preview" style="display:none;margin-top:8px;padding:10px 12px;background:var(--purple-faint);border-radius:3px;font-size:13px;color:var(--purple-dark);">👤 Your name will appear as: <strong id="r-name-preview-val"></strong></div>
+        <div class="form-error" id="r-eid-err">Please use your Accenture email, or you've already registered.</div>
+      </div>
+      <div class="form-group">
+        <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;padding:12px;background:var(--purple-faint);border-radius:3px;border:1px solid rgba(161,0,255,0.2);">
+          <input type="checkbox" id="r-anon" style="margin-top:2px;accent-color:#A100FF;width:16px;height:16px;flex-shrink:0;" />
+          <span style="font-size:13px;color:var(--grey-dark);line-height:1.5;">
+            <strong style="color:#1a1a1a;">Keep me anonymous from my Secret Santa</strong><br/>
+            <span style="font-size:12px;color:var(--grey-mid);">Check this if you don't want your Secret Santa to know who you are — they'll find out at the party! 🎉</span>
+          </span>
+        </label>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Choose a Secret Username</label>
+        <input class="form-input" id="r-uname" type="text" placeholder="e.g. purplestar88, nightowl42..." autocomplete="off" />
+        <div class="form-hint">Lowercase letters, numbers, underscores only. No spaces. Only you will know this.</div>
+        <div class="form-error" id="r-uname-err">Username taken or invalid. Try another.</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">🚫 Please Don't Get Me (optional)</label>
+        <div class="form-hint" style="margin-bottom:8px;">Add things you really don't want — your Secret Santa will see this list.</div>
+        <div class="tag-list" id="r-avoid-list"></div>
+        <div class="add-row">
+          <input class="form-input" id="r-avoid-input" placeholder="e.g. Candles, perfume, mugs..." onkeydown="if(event.key==='Enter')addRegAvoid()" />
+          <button type="button" class="btn btn-danger btn-sm" onclick="addRegAvoid()">Add</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">📝 Notes for Santa (optional)</label>
+        <textarea class="form-textarea" id="r-notes" placeholder="Allergies, size preferences, anything helpful..."></textarea>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="doRegister()">Register & Confirm Attendance 🎉</button>
+      <div class="auth-switch">Already registered? <a onclick="go('s-login')">Sign in</a></div>
+      <div class="auth-switch" style="margin-top:6px;"><a onclick="go('s-landing')">← Back</a></div>
+    </div>
+  </div>
+
+  <!-- LOGIN -->
+  <div id="s-login" class="auth-wrap" style="display:none;">
+    <div class="auth-card">
+      <div class="auth-brand"><span class="acc-logo" style="font-size:22px;color:#1a1a1a;">accen<span class="acc-t-wrap">t<svg class="acc-chevron" width="12" height="11" viewBox="0 0 12 11" style="bottom:22px;"><polyline points="1,1 10,5.5 1,10" fill="none" stroke="#A100FF" stroke-width="2.5" stroke-linecap="butt" stroke-linejoin="miter"/></svg></span>ure</span><span style="font-size:12px;font-weight:600;color:var(--grey-mid);margin-left:4px;">MAS Account</span></div>
+      <div class="auth-icon">👋</div>
+      <div class="auth-title">Welcome back</div>
+      <div class="auth-sub">Enter your secret username to sign in and manage your profile.</div>
+      <div class="form-group">
+        <label class="form-label">Your Secret Username</label>
+        <input class="form-input" id="l-uname" type="text" placeholder="Your username" autocomplete="off" onkeydown="if(event.key==='Enter')doLogin()" />
+        <div class="form-error" id="l-err">Username not found. Check your username and try again.</div>
+        <div class="form-hint" style="margin-top:8px;">Forgot your username? Contact <strong>Sin Loke Lim</strong> to retrieve it.</div>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="doLogin()">Sign In</button>
+      <div class="auth-switch">New here? <a onclick="go('s-register')">Register to confirm attendance</a></div>
+      <div class="auth-switch" style="margin-top:6px;"><a onclick="go('s-landing')">← Back</a></div>
+    </div>
+  </div>
+
+</div><!-- /auth-screen -->
+
+<!-- ═══════════════════════════════════════════
+     MAIN APP
+═══════════════════════════════════════════ -->
+<div id="main-app" style="display:none;">
+  <div class="hero">
+    <div class="hero-eyebrow">Annual Celebration · MAS Account</div>
+    <h1>Christmas<br><span>Gift Exchange</span> 2026</h1>
+    <div class="hero-sub">Accenture MAS Account Team</div>
+    <div class="hero-meta">
+      <div class="hero-meta-item"><div class="label">Date</div><div class="value">27 November 2026</div></div>
+      <div class="hero-meta-item"><div class="label">Location</div><div class="value" id="h-location">TBC</div></div>
+      <div class="hero-meta-item"><div class="label">Attendees Confirmed</div><div class="value" id="h-count">—</div></div>
+    </div>
+  </div>
+
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('t-profile',this)">👤 My Profile</button>
+    <button class="tab-btn" onclick="switchTab('t-santa',this)">🎅 Secret Santa</button>
+  </div>
+
+  <div class="content">
+
+    <!-- MY PROFILE -->
+    <div id="t-profile" class="tab-panel active">
+      <div class="section-title">My Profile</div>
+      <p class="section-sub">Let your Secret Santa know what <em>not</em> to buy. The more honest you are, the better the gift!</p>
+      <div class="card" style="max-width:540px;">
+        <div class="profile-header">
+          <div class="profile-avatar" id="p-avatar">?</div>
+          <div>
+            <div class="profile-name" id="p-name">—</div>
+            <div class="profile-meta" id="p-meta">—</div>
+          </div>
+          <span class="confirmed-badge">✅ Attending</span>
+        </div>
+        <div class="form-group">
+          <label class="form-label">🚫 Please Don't Get Me</label>
+          <div class="form-hint" style="margin-bottom:10px;">Be specific! This list is shown to your Secret Santa to help them avoid buying something you won't like.</div>
+          <div class="tag-list" id="avoid-list"></div>
+          <div class="add-row">
+            <input class="form-input" id="avoid-input" placeholder="e.g. Candles, perfume, mugs..." onkeydown="if(event.key==='Enter')addAvoid()" />
+            <button class="btn btn-danger btn-sm" onclick="addAvoid()">Add</button>
+          </div>
+        </div>
+        <div class="form-group" style="margin-top:4px;">
+          <label class="form-label">📝 Anything else for Santa? (optional)</label>
+          <textarea class="form-textarea" id="p-notes" placeholder="Allergies, size info, preferences... anything useful!"></textarea>
+        </div>
+        <button class="btn btn-primary" onclick="saveProfile()" style="margin-top:4px;">💾 Save Profile</button>
+      </div>
+    </div>
+
+    <!-- SECRET SANTA -->
+    <div id="t-santa" class="tab-panel">
+      <div class="section-title">🎅 Secret Santa</div>
+      <p class="section-sub">Your gift assignment — revealed on the date below.</p>
+      <div id="santa-content"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     ADMIN PORTAL
+═══════════════════════════════════════════ -->
+<div id="admin-portal" style="display:none;">
+  <div class="admin-header">
+    <div class="logo"><span class="acc-logo" style="font-size:18px;color:#fff;">accen<span class="acc-t-wrap">t<svg class="acc-chevron" width="10" height="9" viewBox="0 0 10 9" style="bottom:18px;"><polyline points="1,1 8,4.5 1,8" fill="none" stroke="#A100FF" stroke-width="2.2" stroke-linecap="butt" stroke-linejoin="miter"/></svg></span>ure</span></div>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <span class="admin-badge">Admin Panel</span>
+      <button class="btn-logout" onclick="exitAdmin()">Exit Admin</button>
+    </div>
+  </div>
+
+  <div class="content" style="max-width:1100px;">
+    <div class="section-title" style="margin-bottom:4px;">Admin Panel</div>
+    <p class="section-sub">Manage the guest list, run the draw, and configure event settings.</p>
+
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-number" id="a-registered">0</div><div class="stat-label">Registered / Confirmed</div></div>
+      <div class="stat-card"><div class="stat-number" id="a-pairs">0</div><div class="stat-label">Pairs Drawn</div></div>
+    </div>
+
+
+
+    <!-- ATTENDEE TABLE -->
+    <div class="admin-section">
+      <div class="admin-section-title">👥 Confirmed Attendees <span style="font-size:11px;font-weight:400;color:var(--grey-mid);">(registered users)</span></div>
+      <div class="table-wrap">
+        <table class="att-table">
+          <thead><tr><th>Name</th><th>Email (EID)</th><th>Username</th><th>Don't-Get-Me List</th><th>Notes</th><th></th></tr></thead>
+          <tbody id="a-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- DRAW -->
+    <div class="admin-section">
+      <div class="admin-section-title">🎲 Secret Santa Draw</div>
+      <div class="card">
+        <p style="font-size:13px;color:var(--grey-dark);margin-bottom:16px;">Randomly assigns every registered attendee to one other person. No one gets themselves. Results are only visible to each person after the reveal date.</p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <button class="btn btn-primary" onclick="runDraw()">🎲 Run Draw</button>
+          <button class="btn btn-ghost" onclick="clearDraw()">Clear Draw</button>
+        </div>
+        <div id="draw-msg" style="margin-top:12px;font-size:13px;"></div>
+      </div>
+      <div id="pairs-wrap" style="display:none;margin-top:16px;">
+        <div style="font-size:12px;font-weight:600;color:var(--grey-mid);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.07em;">Current Pairings (Admin View Only)</div>
+        <div class="pairing-grid" id="pairs-grid"></div>
+      </div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="admin-section">
+      <div class="admin-section-title">⚙️ Event Settings</div>
+      <div class="card">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Venue / Location</label>
+            <input class="form-input" id="cfg-location" placeholder="e.g. K.STAR Clarke Quay, Room 5" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Secret Santa Reveal Date</label>
+            <input class="form-input" id="cfg-reveal" type="date" value="2026-11-01" />
+            <div class="form-hint">Assignments are hidden until this date.</div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Change Admin Password</label>
+            <input class="form-input" id="cfg-pw" type="password" placeholder="New password..." />
+          </div>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="saveSettings()">Save Settings</button>
+      </div>
+    </div>
+
+    <!-- DATA -->
+    <div class="admin-section">
+      <div class="admin-section-title">💾 Data</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <button class="btn btn-outline btn-sm" onclick="exportData()">⬇️ Export JSON</button>
+        <button class="btn btn-ghost btn-sm" onclick="document.getElementById('import-file').click()">⬆️ Import JSON</button>
+        <input type="file" id="import-file" accept=".json" style="display:none;" onchange="importData(event)" />
+        <button class="btn btn-danger btn-sm" onclick="resetAll()">🗑 Reset All Data</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN PASSWORD MODAL -->
+<div class="modal-bg" id="admin-modal">
+  <div class="modal-box">
+    <div style="font-size:36px;margin-bottom:12px;">🔐</div>
+    <h3>Admin Access</h3>
+    <p>Enter the admin password to manage the guest list and draw.</p>
+    <div class="form-group" style="text-align:left;">
+      <input class="form-input" id="admin-pw-input" type="password" placeholder="Password" onkeydown="if(event.key==='Enter')checkAdminPw()" />
+      <div class="form-error" id="admin-pw-err">Incorrect password. Try again.</div>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:center;">
+      <button class="btn btn-primary" onclick="checkAdminPw()">Enter</button>
+      <button class="btn btn-ghost" onclick="closeAdminModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>
+  emailjs.init('Zq9WFukPBqQoKhiRa');
+</script>
+<script>
+// ══════════════════════════════════════════
+// STORAGE
+// ══════════════════════════════════════════
+const SK = 'mas_xmas_26';
+
+function getStore() {
+  try { return JSON.parse(localStorage.getItem(SK)) || fresh(); }
+  catch { return fresh(); }
+}
+function save(s) { localStorage.setItem(SK, JSON.stringify(s)); }
+function fresh() {
+  return {
+    cfg: { location:'TBC', revealDate:'2026-11-01', adminPw:'accenture2026' },
+    whitelist: [],   // array of lowercase EID strings
+    users: [],       // { eid, name, username, avoid:[], notes:'' }
+    pairings: {}     // { username → username }
+  };
+}
+
+// ══════════════════════════════════════════
+// SESSION
+// ══════════════════════════════════════════
+let SESSION = null;
+
+function me() {
+  if (!SESSION) return null;
+  return getStore().users.find(u => u.username === SESSION) || null;
+}
+
+// ══════════════════════════════════════════
+// SCREEN ROUTING
+// ══════════════════════════════════════════
+function go(id) {
+  ['s-landing','s-register','s-login'].forEach(s => {
+    document.getElementById(s).style.display = s===id ? 'flex' : 'none';
+  });
+  clearErrs();
+}
+function clearErrs() {
+  document.querySelectorAll('.form-error').forEach(e => e.classList.remove('show'));
+}
+function err(id, msg) {
+  const el = document.getElementById(id);
+  if (msg) el.textContent = msg;
+  el.classList.add('show');
+}
+
+// ══════════════════════════════════════════
+// REGISTER AVOID LIST (temp state before submit)
+// ══════════════════════════════════════════
+let regAvoid = [];
+
+function addRegAvoid() {
+  const inp = document.getElementById('r-avoid-input');
+  const val = inp.value.trim(); if (!val) return;
+  regAvoid.push(val); inp.value = '';
+  renderRegAvoid();
+}
+function removeRegAvoid(i) { regAvoid.splice(i,1); renderRegAvoid(); }
+function renderRegAvoid() {
+  document.getElementById('r-avoid-list').innerHTML = regAvoid.map((item,i) =>
+    `<span class="avoid-tag">🚫 ${item}<button onclick="removeRegAvoid(${i})">✕</button></span>`
+  ).join('');
+}
+
+// ══════════════════════════════════════════
+// NAME EXTRACTION FROM EMAIL
+// ══════════════════════════════════════════
+function extractName(eid) {
+  return eid.split('@')[0] || '';
+}
+
+function previewName() {
+  const eid = (document.getElementById('r-eid').value || '').trim().toLowerCase();
+  const preview = document.getElementById('r-name-preview');
+  const previewVal = document.getElementById('r-name-preview-val');
+  if (eid.includes('@accenture.com') && eid.split('@')[0].length > 0) {
+    previewVal.textContent = extractName(eid);
+    preview.style.display = 'block';
+  } else {
+    preview.style.display = 'none';
+  }
+}
+
+// ══════════════════════════════════════════
+// REGISTER  (email domain check only)
+// ══════════════════════════════════════════
+function doRegister() {
+  clearErrs();
+  const eid   = (document.getElementById('r-eid').value   || '').trim().toLowerCase();
+  const name  = extractName(eid);
+  const uname = (document.getElementById('r-uname').value || '').trim().toLowerCase();
+  const store = getStore();
+  let ok = true;
+
+  // EID must end with @accenture.com and not already registered
+  if (!eid || !eid.endsWith('@accenture.com')) {
+    err('r-eid-err', 'Please use your Accenture email (ending in @accenture.com).'); ok = false;
+  } else if (store.users.find(u => u.eid === eid)) {
+    err('r-eid-err', 'This email has already been registered. Sign in instead.'); ok = false;
+  }
+  if (!uname || !/^[a-z0-9_]+$/.test(uname)) {
+    err('r-uname-err', 'Only lowercase letters, numbers, underscores. No spaces.'); ok = false;
+  } else if (store.users.find(u => u.username === uname)) {
+    err('r-uname-err', 'This username is already taken — try another.'); ok = false;
+  }
+  if (!ok) return;
+
+  const notes = (document.getElementById('r-notes').value || '').trim();
+  const revealName = !document.getElementById('r-anon').checked;
+  store.users.push({ eid, name, username: uname, avoid: [...regAvoid], notes, revealName });
+  save(store);
+  regAvoid = [];
+  sendRegistrationEmail(eid, name, uname);
+  signIn(uname);
+}
+
+// ══════════════════════════════════════════
+// LOGIN
+// ══════════════════════════════════════════
+function doLogin() {
+  clearErrs();
+  const uname = (document.getElementById('l-uname').value || '').trim().toLowerCase();
+  const store = getStore();
+  if (!store.users.find(u => u.username === uname)) {
+    err('l-err'); return;
+  }
+  signIn(uname);
+}
+
+function signIn(uname) {
+  SESSION = uname;
+  document.getElementById('auth-screen').style.display = 'none';
+  document.getElementById('main-app').style.display = 'block';
+  document.getElementById('app-header').style.display = 'flex';
+  document.getElementById('hdr-username').textContent = uname;
+  renderProfile();
+  renderSanta();
+  renderHero();
+}
+
+function logout() {
+  SESSION = null;
+  document.getElementById('main-app').style.display = 'none';
+  document.getElementById('app-header').style.display = 'none';
+  document.getElementById('auth-screen').style.display = 'block';
+  go('s-landing');
+}
+
+// ══════════════════════════════════════════
+// TABS
+// ══════════════════════════════════════════
+function switchTab(id, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+  if (id === 't-santa') renderSanta();
+}
+
+// ══════════════════════════════════════════
+// HERO
+// ══════════════════════════════════════════
+function renderHero() {
+  const s = getStore();
+  document.getElementById('h-location').textContent = s.cfg.location || 'TBC';
+  document.getElementById('h-count').textContent = s.users.length;
+}
+
+// ══════════════════════════════════════════
+// MY PROFILE
+// ══════════════════════════════════════════
+function renderProfile() {
+  const u = me(); if (!u) return;
+  const initials = u.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+  document.getElementById('p-avatar').textContent = initials;
+  document.getElementById('p-name').textContent = u.name;
+  document.getElementById('p-meta').textContent = u.eid + ' · @' + u.username;
+  document.getElementById('p-notes').value = u.notes || '';
+  renderAvoidTags(u.avoid || []);
+}
+
+function renderAvoidTags(list) {
+  document.getElementById('avoid-list').innerHTML = list.map((item,i) =>
+    `<span class="avoid-tag">🚫 ${item}<button onclick="removeAvoid(${i})">✕</button></span>`
+  ).join('');
+}
+
+function addAvoid() {
+  const inp = document.getElementById('avoid-input');
+  const val = inp.value.trim(); if (!val) return;
+  const s = getStore(), u = s.users.find(x => x.username === SESSION);
+  if (!u.avoid) u.avoid = [];
+  u.avoid.push(val); save(s);
+  renderAvoidTags(u.avoid); inp.value = '';
+}
+
+function removeAvoid(i) {
+  const s = getStore(), u = s.users.find(x => x.username === SESSION);
+  u.avoid.splice(i,1); save(s); renderAvoidTags(u.avoid);
+}
+
+function saveProfile() {
+  const s = getStore(), u = s.users.find(x => x.username === SESSION);
+  u.notes = document.getElementById('p-notes').value.trim();
+  save(s); toast('Profile saved! 🎉','success');
+}
+
+// ══════════════════════════════════════════
+// SECRET SANTA
+// ══════════════════════════════════════════
+function renderSanta() {
+  const s = getStore(), u = me();
+  if (!u) return;
+  const el = document.getElementById('santa-content');
+  const revealDate = new Date(s.cfg.revealDate + 'T00:00:00');
+  const now = new Date();
+  const hasDraw = s.pairings && Object.keys(s.pairings).length > 0;
+
+  if (!hasDraw) {
+    el.innerHTML = `<div class="santa-card"><div class="santa-big-icon">🎁</div><div class="santa-locked-title">Draw hasn't happened yet!</div><div class="santa-locked-sub">The admin hasn't run the Secret Santa draw yet. Make sure your "Don't-Get-Me" list is ready!</div></div>`;
+    return;
+  }
+
+  if (now < revealDate) {
+    const days = Math.ceil((revealDate - now)/(1000*60*60*24));
+    el.innerHTML = `<div class="santa-card">
+      <div class="santa-big-icon">🔒</div>
+      <div class="santa-locked-title">Your assignment is sealed!</div>
+      <div class="santa-locked-sub">Results reveal on <strong>${revealDate.toLocaleDateString('en-SG',{day:'numeric',month:'long',year:'numeric'})}</strong>.<br>Until then, keep your "Don't-Get-Me" list updated!</div>
+      <div class="countdown-pill">
+        <div class="days">${days}</div>
+        <div class="days-label">day${days!==1?'s':''} until reveal</div>
+      </div>
+    </div>`;
+    return;
+  }
+
+  // Revealed!
+  const recipUname = s.pairings[u.username];
+  if (!recipUname) {
+    el.innerHTML = `<div class="santa-card"><div class="santa-big-icon">😕</div><div class="santa-locked-title">You're not in the draw.</div><div class="santa-locked-sub">Please check with the admin.</div></div>`;
+    return;
+  }
+  const recip = s.users.find(x => x.username === recipUname);
+  if (!recip) { el.innerHTML = `<div class="santa-card"><p>Error: recipient not found.</p></div>`; return; }
+
+  const avoidHtml = recip.avoid && recip.avoid.length
+    ? recip.avoid.map(v=>`<div class="avoid-item-row">${v}</div>`).join('')
+    : `<div class="empty-note">Nothing listed — surprise them! 🎁</div>`;
+  const notesHtml = recip.notes
+    ? `<div class="reveal-section"><div class="reveal-section-label">📝 Their Notes</div><p style="font-size:13px;color:var(--grey-dark);">${recip.notes}</p></div>` : '';
+
+  el.innerHTML = `<div class="reveal-card">
+    <div style="text-align:center;margin-bottom:24px;">
+      <div style="font-size:52px;margin-bottom:10px;">🎅</div>
+      <div class="reveal-to-label">You are buying a gift for</div>
+      <div class="reveal-name">${recip.revealName ? recip.name : '🎁 Someone Special'}</div>
+      ${!recip.revealName ? `<div style="font-size:12px;color:var(--grey-mid);margin-top:4px;">They chose to stay anonymous — you'll find out at the party! 🤫</div>` : ''}
+    </div>
+    <div class="reveal-section">
+      <div class="reveal-section-label">🚫 Please Don't Get These</div>
+      ${avoidHtml}
+    </div>
+    ${notesHtml}
+    <p style="font-size:11px;color:var(--grey-mid);text-align:center;margin-top:16px;">Keep this a secret until the party! 🤫</p>
+  </div>`;
+}
+
+// ══════════════════════════════════════════
+// ADMIN — modal
+// ══════════════════════════════════════════
+function openAdminModal() {
+  document.getElementById('admin-modal').classList.add('open');
+  setTimeout(() => document.getElementById('admin-pw-input').focus(), 80);
+}
+function closeAdminModal() {
+  document.getElementById('admin-modal').classList.remove('open');
+  document.getElementById('admin-pw-input').value = '';
+  document.getElementById('admin-pw-err').classList.remove('show');
+}
+function checkAdminPw() {
+  const pw = document.getElementById('admin-pw-input').value;
+  if (pw === getStore().cfg.adminPw) { closeAdminModal(); openAdmin(); }
+  else document.getElementById('admin-pw-err').classList.add('show');
+}
+function openAdmin() {
+  document.getElementById('auth-screen').style.display = 'none';
+  document.getElementById('main-app').style.display = 'none';
+  document.getElementById('app-header').style.display = 'none';
+  document.getElementById('admin-portal').style.display = 'block';
+  renderAdmin();
+}
+function exitAdmin() {
+  document.getElementById('admin-portal').style.display = 'none';
+  if (SESSION) {
+    document.getElementById('main-app').style.display = 'block';
+    document.getElementById('app-header').style.display = 'flex';
+  } else {
+    document.getElementById('auth-screen').style.display = 'block'; go('s-landing');
+  }
+}
+
+// ══════════════════════════════════════════
+// ADMIN — render
+// ══════════════════════════════════════════
+function renderAdmin() {
+  const s = getStore();
+  const pairCount = Object.keys(s.pairings||{}).length;
+  document.getElementById('a-registered').textContent = s.users.length;
+  document.getElementById('a-pairs').textContent     = pairCount;
+  document.getElementById('cfg-location').value = s.cfg.location || '';
+  document.getElementById('cfg-reveal').value   = s.cfg.revealDate || '2026-11-01';
+
+  // Attendee table
+  const tbody = document.getElementById('a-tbody');
+  if (!s.users.length) {
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--grey-mid);padding:20px;">No one has registered yet.</td></tr>`;
+  } else {
+    tbody.innerHTML = s.users.map(u => `
+      <tr>
+        <td><strong>${u.name}</strong></td>
+        <td style="color:var(--grey-mid);font-size:11px;">${u.eid}</td>
+        <td><code style="background:var(--purple-faint);color:var(--purple-dark);padding:2px 7px;border-radius:2px;font-size:11px;">${u.username}</code></td>
+        <td>${(u.avoid||[]).length ? (u.avoid||[]).map(x=>`<span style="font-size:11px;background:#fff3f3;color:#c62828;padding:2px 6px;border-radius:2px;display:inline-block;margin:1px;">🚫 ${x}</span>`).join('') : '<span style="font-size:11px;color:var(--grey-mid);">—</span>'}</td>
+        <td style="font-size:12px;color:var(--grey-dark);">${u.notes||'—'}</td>
+        <td><button class="btn btn-ghost btn-sm" onclick="removeUser('${u.username}')">Remove</button></td>
+      </tr>`).join('');
+  }
+
+  // Pairings
+  if (pairCount) {
+    document.getElementById('pairs-grid').innerHTML = Object.entries(s.pairings).map(([g,r]) => {
+      const giver = s.users.find(u=>u.username===g);
+      const recv  = s.users.find(u=>u.username===r);
+      return `<div class="pairing-card"><strong>${giver?.name||g}</strong><span class="pair-arrow">→</span>🎁 ${recv?.name||r}</div>`;
+    }).join('');
+    document.getElementById('pairs-wrap').style.display = 'block';
+  } else {
+    document.getElementById('pairs-wrap').style.display = 'none';
+  }
+}
+
+// ══════════════════════════════════════════
+// ADMIN — users
+// ══════════════════════════════════════════
+function removeUser(uname) {
+  if (!confirm('Remove this attendee? This cannot be undone.')) return;
+  const s = getStore();
+  s.users = s.users.filter(u=>u.username!==uname);
+  delete s.pairings[uname];
+  Object.keys(s.pairings).forEach(k=>{ if(s.pairings[k]===uname) delete s.pairings[k]; });
+  save(s); renderAdmin(); toast('Removed.','success');
+}
+
+// ══════════════════════════════════════════
+// ADMIN — draw
+// ══════════════════════════════════════════
+function runDraw() {
+  const s = getStore();
+  const pool = s.users.map(u=>u.username);
+  if (pool.length < 2) { document.getElementById('draw-msg').innerHTML=`<span style="color:var(--red)">❌ Need at least 2 registered attendees.</span>`; return; }
+  let pairings={}, ok=false, tries=0;
+  while (!ok && tries<300) {
+    const sh=[...pool]; for(let i=sh.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[sh[i],sh[j]]=[sh[j],sh[i]];}
+    ok=pool.every((u,i)=>sh[i]!==u); if(ok) pool.forEach((u,i)=>pairings[u]=sh[i]);
+    tries++;
+  }
+  s.pairings=pairings; save(s); renderAdmin();
+  document.getElementById('draw-msg').innerHTML=`<span style="color:var(--green)">✅ Draw complete — ${pool.length} pairs assigned!</span>`;
+}
+function clearDraw() {
+  if (!confirm('Clear all pairings?')) return;
+  const s=getStore(); s.pairings={}; save(s); renderAdmin();
+  document.getElementById('draw-msg').innerHTML=`<span style="color:var(--grey-mid)">Draw cleared.</span>`;
+}
+
+// ══════════════════════════════════════════
+// ADMIN — settings & data
+// ══════════════════════════════════════════
+function saveSettings() {
+  const s=getStore();
+  s.cfg.location   = document.getElementById('cfg-location').value.trim()||'TBC';
+  s.cfg.revealDate = document.getElementById('cfg-reveal').value||'2026-11-01';
+  const pw = document.getElementById('cfg-pw').value;
+  if (pw) { s.cfg.adminPw=pw; document.getElementById('cfg-pw').value=''; }
+  save(s); toast('Settings saved! ✅','success');
+  // update hero if app is visible
+  if (SESSION) renderHero();
+}
+function exportData() {
+  const b=new Blob([JSON.stringify(getStore(),null,2)],{type:'application/json'});
+  const a=Object.assign(document.createElement('a'),{href:URL.createObjectURL(b),download:'mas_xmas_2026.json'});
+  a.click(); URL.revokeObjectURL(a.href); toast('Exported!','success');
+}
+function importData(e) {
+  const f=e.target.files[0]; if(!f)return;
+  const r=new FileReader();
+  r.onload=ev=>{ try{save(JSON.parse(ev.target.result));renderAdmin();toast('Imported!','success');}catch{toast('Invalid JSON.','error');} };
+  r.readAsText(f); e.target.value='';
+}
+function resetAll() {
+  if(!confirm('⚠️ Delete ALL data? Cannot be undone.'))return;
+  localStorage.removeItem(SK); renderAdmin(); toast('All data reset.','error');
+}
+
+// ══════════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════════
+function toast(msg, type='') {
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className='toast show '+type;
+  setTimeout(()=>t.className='toast',3000);
+}
+
+// ══════════════════════════════════════════
+// EMAIL — EmailJS
+// ══════════════════════════════════════════
+function sendRegistrationEmail(eid, name, username) {
+  if (typeof emailjs === 'undefined') { console.warn('EmailJS not loaded'); return; }
+  emailjs.send('service_dpz0x1j', 'template_if080zi', {
+    to_email: eid,
+    to_name:  name,
+    username: username,
+    site_url: window.location.href
+  }).then(() => {
+    console.log('Registration email sent to', eid);
+  }).catch(err => {
+    console.error('EmailJS error:', err);
+  });
+}
+
+
+// ══════════════════════════════════════════
+function updateCountdown() {
+  // Party: 27 Nov 2026 7:00 PM GMT+8 (adjust hour as needed)
+  const partyUTC = Date.UTC(2026, 10, 27, 11, 0, 0); // 19:00 GMT+8 = 11:00 UTC
+  const now = Date.now();
+  const diff = partyUTC - now;
+
+  const dEl = document.getElementById('cd-days');
+  const hEl = document.getElementById('cd-hours');
+  const mEl = document.getElementById('cd-mins');
+  const sEl = document.getElementById('cd-secs');
+  if (!dEl) return;
+
+  if (diff <= 0) {
+    dEl.textContent = hEl.textContent = mEl.textContent = sEl.textContent = '00';
+    return;
+  }
+
+  const days  = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const mins  = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+  const secs  = Math.floor((diff % (1000 * 60)) / 1000);
+
+  dEl.textContent = String(days).padStart(2, '0');
+  hEl.textContent = String(hours).padStart(2, '0');
+  mEl.textContent = String(mins).padStart(2, '0');
+  sEl.textContent = String(secs).padStart(2, '0');
+}
+
+updateCountdown();
+setInterval(updateCountdown, 1000);
+// ══════════════════════════════════════════
+document.addEventListener('DOMContentLoaded',()=>{
+  const s=getStore(); if(!s.whitelist)s.whitelist=[]; save(s);
+});
+</script>
+</body>
+</html>
