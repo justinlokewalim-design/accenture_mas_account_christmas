@@ -310,6 +310,9 @@
         <textarea class="form-textarea" id="r-notes" placeholder="Allergies, size preferences, anything helpful..."></textarea>
       </div>
       <button class="btn btn-primary btn-full" onclick="doRegister()">Register & Confirm Attendance 🎉</button>
+      <div style="margin-top:12px;padding:12px 14px;background:#fffbe6;border:1px solid #ffe58f;border-radius:3px;font-size:12px;color:#7c6200;line-height:1.6;">
+        📧 After registering, you'll receive a confirmation email from <strong>event.notification.forfun@gmail.com</strong> with your username. Don't worry — it's not spam! We just want to make sure you don't forget your username. 😊
+      </div>
       <div class="auth-switch">Already registered? <a onclick="go('s-login')">Sign in</a></div>
       <div class="auth-switch" style="margin-top:6px;"><a onclick="go('s-landing')">← Back</a></div>
     </div>
@@ -732,7 +735,11 @@ function renderSanta() {
   const hasDraw = s.pairings && Object.keys(s.pairings).length > 0;
 
   if (!hasDraw) {
-    el.innerHTML = `<div class="santa-card"><div class="santa-big-icon">🎁</div><div class="santa-locked-title">Draw hasn't happened yet!</div><div class="santa-locked-sub">The admin hasn't run the Secret Santa draw yet. Make sure your "Don't-Get-Me" list is ready!</div></div>`;
+    el.innerHTML = `<div class="santa-card">
+      <div class="santa-big-icon">🎅</div>
+      <div class="santa-locked-title">Hang tight!</div>
+      <div class="santa-locked-sub">Our system will automatically assign your Secret Santa partner soon. Make sure your <strong>"Don't Get Me"</strong> list is updated in the meantime! 🎁</div>
+    </div>`;
     return;
   }
 
@@ -740,8 +747,8 @@ function renderSanta() {
     const days = Math.ceil((revealDate - now)/(1000*60*60*24));
     el.innerHTML = `<div class="santa-card">
       <div class="santa-big-icon">🔒</div>
-      <div class="santa-locked-title">Your assignment is sealed!</div>
-      <div class="santa-locked-sub">Results reveal on <strong>${revealDate.toLocaleDateString('en-SG',{day:'numeric',month:'long',year:'numeric'})}</strong>.<br>Until then, keep your "Don't-Get-Me" list updated!</div>
+      <div class="santa-locked-title">Your assignment is ready!</div>
+      <div class="santa-locked-sub">You've been assigned a Secret Santa partner. Come back on <strong>${revealDate.toLocaleDateString('en-SG',{day:'numeric',month:'long',year:'numeric'})}</strong> to find out who you're gifting! 🎄<br/><br/>In the meantime, keep your <strong>"Don't Get Me"</strong> list updated so your Santa knows what to avoid.</div>
       <div class="countdown-pill">
         <div class="days">${days}</div>
         <div class="days-label">day${days!==1?'s':''} until reveal</div>
