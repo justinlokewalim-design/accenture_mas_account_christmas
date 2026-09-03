@@ -297,8 +297,8 @@
         <div class="form-error" id="r-uname-err">Username taken or invalid. Try another.</div>
       </div>
       <div class="form-group">
-        <label class="form-label">🚫 Please Don't Get Me (optional)</label>
-        <div class="form-hint" style="margin-bottom:8px;">Add things you really don't want — your Secret Santa will see this list.</div>
+        <label class="form-label">🙈 Help Your Santa Out! (optional)</label>
+        <div class="form-hint" style="margin-bottom:8px;">Any gifts you'd rather avoid? Spill the beans — your Santa will thank you for it! 😄</div>
         <div class="tag-list" id="r-avoid-list"></div>
         <div class="add-row">
           <input class="form-input" id="r-avoid-input" placeholder="e.g. Candles, perfume, mugs..." onkeydown="if(event.key==='Enter')addRegAvoid()" />
@@ -331,7 +331,7 @@
         <div class="form-error" id="l-err">Username not found. Check your username and try again.</div>
         <div class="form-hint" style="margin-top:8px;">Forgot your username? Contact <strong>Sin Loke Lim</strong> to retrieve it.</div>
       </div>
-      <button class="btn btn-primary btn-full" onclick="doLogin()">Sign In</button>
+      <button id="login-btn" class="btn btn-primary btn-full" onclick="doLogin()">Sign In</button>
       <div class="auth-switch">New here? <a onclick="go('s-register')">Register to confirm attendance</a></div>
       <div class="auth-switch" style="margin-top:6px;"><a onclick="go('s-landing')">← Back</a></div>
     </div>
@@ -375,8 +375,8 @@
           <span class="confirmed-badge">✅ Attending</span>
         </div>
         <div class="form-group">
-          <label class="form-label">🚫 Please Don't Get Me</label>
-          <div class="form-hint" style="margin-bottom:10px;">Be specific! This list is shown to your Secret Santa to help them avoid buying something you won't like.</div>
+          <label class="form-label">🙈 Please Avoid Getting Me...</label>
+          <div class="form-hint" style="margin-bottom:10px;">Be as specific as you like! Your Santa sees this list — the more honest you are, the better your gift will be 🎁</div>
           <div class="tag-list" id="avoid-list"></div>
           <div class="add-row">
             <input class="form-input" id="avoid-input" placeholder="e.g. Candles, perfume, mugs..." onkeydown="if(event.key==='Enter')addAvoid()" />
@@ -545,19 +545,27 @@ function setLoading(btn, loading) {
 }
 
 // ══════════════════════════════════════════
-// SESSION — only username stored locally
+// SESSION — username + data cached locally
 // ══════════════════════════════════════════
-let SESSION = null;      // username string
-let SESSION_DATA = null; // full user object from API
+let SESSION = null;
+let SESSION_DATA = null;
+
+const SK_DATA = 'mas_xmas_26_data'; // cache user profile locally
 
 function getSession() {
   return localStorage.getItem(SK) || null;
 }
-function saveSession(uname) {
+function saveSession(uname, data) {
   localStorage.setItem(SK, uname);
+  localStorage.setItem(SK_DATA, JSON.stringify(data));
+}
+function getCachedData() {
+  try { return JSON.parse(localStorage.getItem(SK_DATA)) || null; }
+  catch { return null; }
 }
 function clearSession() {
   localStorage.removeItem(SK);
+  localStorage.removeItem(SK_DATA);
   SESSION = null;
   SESSION_DATA = null;
 }
@@ -663,7 +671,7 @@ async function doLogin() {
   if (!uname) { err('l-err', 'Please enter your username.'); return; }
   if (!API_URL) { toast('API URL not configured yet!', 'error'); return; }
 
-  const btn = document.querySelector('button[onclick="doLogin()"]');
+  const btn = document.getElementById('login-btn');
   setLoading(btn, true);
 
   try {
@@ -675,14 +683,34 @@ async function doLogin() {
   }
 }
 
-async function signIn(uname) {
+async function signIn(uname, cached = null) {
+  // Use cached data immediately if available — much faster!
+  const data = cached || getCachedData();
+  if (data && data.username === uname) {
+    SESSION = uname;
+    SESSION_DATA = data;
+    showApp(uname);
+    // Refresh data from API silently in background
+    apiGet({ action:'login', username:uname }).then(res => {
+      if (res.ok) {
+        SESSION_DATA = res.data;
+        saveSession(uname, res.data);
+        renderProfile();
+      }
+    }).catch(() => {});
+    return;
+  }
+
+  // No cache — must call API
   const res = await apiGet({ action:'login', username:uname });
   if (!res.ok) throw new Error(res.error);
-
   SESSION = uname;
   SESSION_DATA = res.data;
-  saveSession(uname);
+  saveSession(uname, res.data);
+  showApp(uname);
+}
 
+function showApp(uname) {
   document.getElementById('auth-screen').style.display = 'none';
   document.getElementById('main-app').style.display = 'block';
   document.getElementById('app-header').style.display = 'flex';
@@ -831,7 +859,7 @@ async function renderSanta() {
         ${!recip.name ? `<div style="font-size:12px;color:var(--grey-mid);margin-top:4px;">They chose to stay anonymous — you'll find out at the party! 🤫</div>` : ''}
       </div>
       <div class="reveal-section">
-        <div class="reveal-section-label">🚫 Please Don't Get These</div>
+        <div class="reveal-section-label">🙈 They'd Rather Not Receive...</div>
         ${avoidHtml}
       </div>
       ${notesHtml}
@@ -1032,8 +1060,13 @@ setInterval(updateCountdown, 1000);
 // ══════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', async () => {
   const saved = getSession();
+  const cached = getCachedData();
   if (saved && API_URL) {
-    try { await signIn(saved); } catch(e) { clearSession(); }
+    try {
+      await signIn(saved, cached); // uses cache instantly if available
+    } catch(e) {
+      clearSession();
+    }
   }
 });
 </script>
