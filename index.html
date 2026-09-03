@@ -515,32 +515,51 @@
 </script>
 <script>
 // ══════════════════════════════════════════
-// STORAGE
+// CONFIG
 // ══════════════════════════════════════════
-const SK = 'mas_xmas_26';
+const API_URL = 'https://script.google.com/macros/s/AKfycbyrq_L0g9FN__HryorTiBqdy6DZzJq_jXsQ-fYwQCCDWVYhdZrGUG9jQWXacPenfA9PBw/exec';
+const SK = 'mas_xmas_26_session'; // only stores session (username) locally
 
-function getStore() {
-  try { return JSON.parse(localStorage.getItem(SK)) || fresh(); }
-  catch { return fresh(); }
-}
-function save(s) { localStorage.setItem(SK, JSON.stringify(s)); }
-function fresh() {
-  return {
-    cfg: { location:'TBC', revealDate:'2026-11-01', adminPw:'accenture2026' },
-    whitelist: [],   // array of lowercase EID strings
-    users: [],       // { eid, name, username, avoid:[], notes:'' }
-    pairings: {}     // { username → username }
-  };
+// ══════════════════════════════════════════
+// API HELPERS
+// ══════════════════════════════════════════
+async function apiGet(params) {
+  const url = API_URL + '?' + new URLSearchParams(params);
+  const res = await fetch(url);
+  return res.json();
 }
 
-// ══════════════════════════════════════════
-// SESSION
-// ══════════════════════════════════════════
-let SESSION = null;
+async function apiPost(body) {
+  const res = await fetch(API_URL, {
+    method: 'POST',
+    body: JSON.stringify(body)
+  });
+  return res.json();
+}
 
-function me() {
-  if (!SESSION) return null;
-  return getStore().users.find(u => u.username === SESSION) || null;
+function setLoading(btn, loading) {
+  if (!btn) return;
+  btn.disabled = loading;
+  btn.dataset.orig = btn.dataset.orig || btn.textContent;
+  btn.textContent = loading ? 'Please wait...' : btn.dataset.orig;
+}
+
+// ══════════════════════════════════════════
+// SESSION — only username stored locally
+// ══════════════════════════════════════════
+let SESSION = null;      // username string
+let SESSION_DATA = null; // full user object from API
+
+function getSession() {
+  return localStorage.getItem(SK) || null;
+}
+function saveSession(uname) {
+  localStorage.setItem(SK, uname);
+}
+function clearSession() {
+  localStorage.removeItem(SK);
+  SESSION = null;
+  SESSION_DATA = null;
 }
 
 // ══════════════════════════════════════════
@@ -562,10 +581,9 @@ function err(id, msg) {
 }
 
 // ══════════════════════════════════════════
-// REGISTER AVOID LIST (temp state before submit)
+// REGISTER AVOID LIST
 // ══════════════════════════════════════════
 let regAvoid = [];
-
 function addRegAvoid() {
   const inp = document.getElementById('r-avoid-input');
   const val = inp.value.trim(); if (!val) return;
@@ -580,11 +598,9 @@ function renderRegAvoid() {
 }
 
 // ══════════════════════════════════════════
-// NAME EXTRACTION FROM EMAIL
+// NAME EXTRACTION
 // ══════════════════════════════════════════
-function extractName(eid) {
-  return eid.split('@')[0] || '';
-}
+function extractName(eid) { return eid.split('@')[0] || ''; }
 
 function previewName() {
   const eid = (document.getElementById('r-eid').value || '').trim().toLowerCase();
@@ -599,53 +615,74 @@ function previewName() {
 }
 
 // ══════════════════════════════════════════
-// REGISTER  (email domain check only)
+// REGISTER
 // ══════════════════════════════════════════
-function doRegister() {
+async function doRegister() {
   clearErrs();
-  const eid   = (document.getElementById('r-eid').value   || '').trim().toLowerCase();
-  const name  = extractName(eid);
+  const eid   = (document.getElementById('r-eid').value || '').trim().toLowerCase();
   const uname = (document.getElementById('r-uname').value || '').trim().toLowerCase();
-  const store = getStore();
-  let ok = true;
-
-  // EID must end with @accenture.com and not already registered
-  if (!eid || !eid.endsWith('@accenture.com')) {
-    err('r-eid-err', 'Please use your Accenture email (ending in @accenture.com).'); ok = false;
-  } else if (store.users.find(u => u.eid === eid)) {
-    err('r-eid-err', 'This email has already been registered. Sign in instead.'); ok = false;
-  }
-  if (!uname || !/^[a-z0-9_]+$/.test(uname)) {
-    err('r-uname-err', 'Only lowercase letters, numbers, underscores. No spaces.'); ok = false;
-  } else if (store.users.find(u => u.username === uname)) {
-    err('r-uname-err', 'This username is already taken — try another.'); ok = false;
-  }
-  if (!ok) return;
-
   const notes = (document.getElementById('r-notes').value || '').trim();
   const revealName = !document.getElementById('r-anon').checked;
-  store.users.push({ eid, name, username: uname, avoid: [...regAvoid], notes, revealName });
-  save(store);
-  regAvoid = [];
-  sendRegistrationEmail(eid, name, uname);
-  signIn(uname);
+  const name  = extractName(eid);
+
+  if (!eid || !eid.endsWith('@accenture.com')) {
+    err('r-eid-err', 'Please use your Accenture email (ending in @accenture.com).'); return;
+  }
+  if (!uname || !/^[a-z0-9_]+$/.test(uname)) {
+    err('r-uname-err', 'Only lowercase letters, numbers, underscores. No spaces.'); return;
+  }
+
+  if (!API_URL) { toast('API URL not configured yet!', 'error'); return; }
+
+  const btn = document.querySelector('button[onclick="doRegister()"]');
+  setLoading(btn, true);
+
+  try {
+    const res = await apiPost({ action:'register', eid, name, username:uname, avoid:[...regAvoid], notes, revealName });
+    if (!res.ok) {
+      if (res.error.includes('email')) err('r-eid-err', res.error);
+      else err('r-uname-err', res.error);
+      return;
+    }
+    regAvoid = [];
+    sendRegistrationEmail(eid, name, uname);
+    await signIn(uname);
+  } catch(e) {
+    toast('Connection error. Please try again.', 'error');
+  } finally {
+    setLoading(btn, false);
+  }
 }
 
 // ══════════════════════════════════════════
 // LOGIN
 // ══════════════════════════════════════════
-function doLogin() {
+async function doLogin() {
   clearErrs();
   const uname = (document.getElementById('l-uname').value || '').trim().toLowerCase();
-  const store = getStore();
-  if (!store.users.find(u => u.username === uname)) {
-    err('l-err'); return;
+  if (!uname) { err('l-err', 'Please enter your username.'); return; }
+  if (!API_URL) { toast('API URL not configured yet!', 'error'); return; }
+
+  const btn = document.querySelector('button[onclick="doLogin()"]');
+  setLoading(btn, true);
+
+  try {
+    await signIn(uname);
+  } catch(e) {
+    err('l-err', 'Username not found. Check your username and try again.');
+  } finally {
+    setLoading(btn, false);
   }
-  signIn(uname);
 }
 
-function signIn(uname) {
+async function signIn(uname) {
+  const res = await apiGet({ action:'login', username:uname });
+  if (!res.ok) throw new Error(res.error);
+
   SESSION = uname;
+  SESSION_DATA = res.data;
+  saveSession(uname);
+
   document.getElementById('auth-screen').style.display = 'none';
   document.getElementById('main-app').style.display = 'block';
   document.getElementById('app-header').style.display = 'flex';
@@ -657,7 +694,7 @@ function signIn(uname) {
 }
 
 function logout() {
-  SESSION = null;
+  clearSession();
   document.getElementById('main-app').style.display = 'none';
   document.getElementById('app-header').style.display = 'none';
   document.getElementById('auth-screen').style.display = 'block';
@@ -678,19 +715,25 @@ function switchTab(id, btn) {
 // ══════════════════════════════════════════
 // HERO
 // ══════════════════════════════════════════
-function renderHero() {
-  const s = getStore();
-  document.getElementById('h-location').textContent = s.cfg.location || 'TBC';
-  document.getElementById('h-count').textContent = s.users.length;
+async function renderHero() {
+  if (!API_URL) return;
+  try {
+    const res = await apiGet({ action:'getSettings' });
+    if (res.ok) {
+      document.getElementById('h-location').textContent = res.data.location || 'TBC';
+    }
+  } catch(e) {}
+  // count from session data
+  document.getElementById('h-count').textContent = SESSION_DATA ? '—' : '—';
 }
 
 // ══════════════════════════════════════════
 // MY PROFILE
 // ══════════════════════════════════════════
 function renderProfile() {
-  const u = me(); if (!u) return;
-  const initials = u.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
-  document.getElementById('p-avatar').textContent = initials;
+  const u = SESSION_DATA; if (!u) return;
+  const initials = u.name.split('').filter((c,i,a) => i===0 || a[i-1]==='.').map(c=>c.toUpperCase()).join('').slice(0,2);
+  document.getElementById('p-avatar').textContent = initials || u.name[0].toUpperCase();
   document.getElementById('p-name').textContent = u.name;
   document.getElementById('p-meta').textContent = u.eid + ' · @' + u.username;
   document.getElementById('p-notes').value = u.notes || '';
@@ -703,94 +746,107 @@ function renderAvoidTags(list) {
   ).join('');
 }
 
-function addAvoid() {
+async function addAvoid() {
   const inp = document.getElementById('avoid-input');
-  const val = inp.value.trim(); if (!val) return;
-  const s = getStore(), u = s.users.find(x => x.username === SESSION);
-  if (!u.avoid) u.avoid = [];
-  u.avoid.push(val); save(s);
-  renderAvoidTags(u.avoid); inp.value = '';
+  const val = inp.value.trim(); if (!val || !SESSION_DATA) return;
+  SESSION_DATA.avoid = SESSION_DATA.avoid || [];
+  SESSION_DATA.avoid.push(val);
+  inp.value = '';
+  renderAvoidTags(SESSION_DATA.avoid);
 }
 
 function removeAvoid(i) {
-  const s = getStore(), u = s.users.find(x => x.username === SESSION);
-  u.avoid.splice(i,1); save(s); renderAvoidTags(u.avoid);
+  if (!SESSION_DATA) return;
+  SESSION_DATA.avoid.splice(i, 1);
+  renderAvoidTags(SESSION_DATA.avoid);
 }
 
-function saveProfile() {
-  const s = getStore(), u = s.users.find(x => x.username === SESSION);
-  u.notes = document.getElementById('p-notes').value.trim();
-  save(s); toast('Profile saved! 🎉','success');
+async function saveProfile() {
+  if (!SESSION_DATA) return;
+  SESSION_DATA.notes = document.getElementById('p-notes').value.trim();
+  try {
+    const res = await apiPost({ action:'saveProfile', username:SESSION, avoid:SESSION_DATA.avoid, notes:SESSION_DATA.notes });
+    if (res.ok) toast('Profile saved! 🎉', 'success');
+    else toast('Error saving: ' + res.error, 'error');
+  } catch(e) {
+    toast('Connection error.', 'error');
+  }
 }
 
 // ══════════════════════════════════════════
 // SECRET SANTA
 // ══════════════════════════════════════════
-function renderSanta() {
-  const s = getStore(), u = me();
-  if (!u) return;
+async function renderSanta() {
   const el = document.getElementById('santa-content');
-  const revealDate = new Date(s.cfg.revealDate + 'T00:00:00');
-  const now = new Date();
-  const hasDraw = s.pairings && Object.keys(s.pairings).length > 0;
+  if (!SESSION || !API_URL) return;
 
-  if (!hasDraw) {
-    el.innerHTML = `<div class="santa-card">
-      <div class="santa-big-icon">🎅</div>
-      <div class="santa-locked-title">Hang tight!</div>
-      <div class="santa-locked-sub">Our system will automatically assign your Secret Santa partner soon. Make sure your <strong>"Don't Get Me"</strong> list is updated in the meantime! 🎁</div>
-    </div>`;
-    return;
-  }
+  el.innerHTML = `<div class="santa-card"><div class="santa-big-icon">⏳</div><div class="santa-locked-title">Loading...</div></div>`;
 
-  if (now < revealDate) {
-    const days = Math.ceil((revealDate - now)/(1000*60*60*24));
-    el.innerHTML = `<div class="santa-card">
-      <div class="santa-big-icon">🔒</div>
-      <div class="santa-locked-title">Your assignment is ready!</div>
-      <div class="santa-locked-sub">You've been assigned a Secret Santa partner. Come back on <strong>${revealDate.toLocaleDateString('en-SG',{day:'numeric',month:'long',year:'numeric'})}</strong> to find out who you're gifting! 🎄<br/><br/>In the meantime, keep your <strong>"Don't Get Me"</strong> list updated so your Santa knows what to avoid.</div>
-      <div class="countdown-pill">
-        <div class="days">${days}</div>
-        <div class="days-label">day${days!==1?'s':''} until reveal</div>
+  try {
+    const res = await apiGet({ action:'getPairing', username:SESSION });
+    if (!res.ok) { el.innerHTML = `<div class="santa-card"><div class="santa-big-icon">😕</div><div class="santa-locked-title">Something went wrong.</div></div>`; return; }
+
+    const d = res.data;
+
+    if (!d.revealed) {
+      const revealDate = new Date(d.revealDate + 'T00:00:00+08:00');
+      const now = new Date();
+      const days = Math.ceil((revealDate - now)/(1000*60*60*24));
+
+      // check if draw has happened (we infer from paired field absence vs revealed=false)
+      el.innerHTML = `<div class="santa-card">
+        <div class="santa-big-icon">🔒</div>
+        <div class="santa-locked-title">Your assignment is ready!</div>
+        <div class="santa-locked-sub">You've been assigned a Secret Santa partner. Come back on <strong>${revealDate.toLocaleDateString('en-SG',{day:'numeric',month:'long',year:'numeric'})}</strong> to find out who you're gifting! 🎄<br/><br/>In the meantime, keep your <strong>"Don't Get Me"</strong> list updated so your Santa knows what to avoid.</div>
+        <div class="countdown-pill">
+          <div class="days">${days}</div>
+          <div class="days-label">day${days!==1?'s':''} until reveal</div>
+        </div>
+      </div>`;
+      return;
+    }
+
+    if (!d.paired) {
+      el.innerHTML = `<div class="santa-card">
+        <div class="santa-big-icon">🎅</div>
+        <div class="santa-locked-title">Hang tight!</div>
+        <div class="santa-locked-sub">Our system will automatically assign your Secret Santa partner soon. Make sure your <strong>"Don't Get Me"</strong> list is updated in the meantime! 🎁</div>
+      </div>`;
+      return;
+    }
+
+    // Revealed!
+    const recip = d.recipient;
+    const avoidHtml = recip.avoid && recip.avoid.length
+      ? recip.avoid.map(v=>`<div class="avoid-item-row">${v}</div>`).join('')
+      : `<div class="empty-note">Nothing listed — surprise them! 🎁</div>`;
+    const notesHtml = recip.notes
+      ? `<div class="reveal-section"><div class="reveal-section-label">📝 Their Notes</div><p style="font-size:13px;color:var(--grey-dark);">${recip.notes}</p></div>` : '';
+
+    el.innerHTML = `<div class="reveal-card">
+      <div style="text-align:center;margin-bottom:24px;">
+        <div style="font-size:52px;margin-bottom:10px;">🎅</div>
+        <div class="reveal-to-label">You are buying a gift for</div>
+        <div class="reveal-name">${recip.name || '🎁 Someone Special'}</div>
+        ${!recip.name ? `<div style="font-size:12px;color:var(--grey-mid);margin-top:4px;">They chose to stay anonymous — you'll find out at the party! 🤫</div>` : ''}
       </div>
+      <div class="reveal-section">
+        <div class="reveal-section-label">🚫 Please Don't Get These</div>
+        ${avoidHtml}
+      </div>
+      ${notesHtml}
+      <p style="font-size:11px;color:var(--grey-mid);text-align:center;margin-top:16px;">Keep this a secret until the party! 🤫</p>
     </div>`;
-    return;
+  } catch(e) {
+    el.innerHTML = `<div class="santa-card"><div class="santa-big-icon">⚠️</div><div class="santa-locked-title">Connection error.</div><div class="santa-locked-sub">Please refresh and try again.</div></div>`;
   }
-
-  // Revealed!
-  const recipUname = s.pairings[u.username];
-  if (!recipUname) {
-    el.innerHTML = `<div class="santa-card"><div class="santa-big-icon">😕</div><div class="santa-locked-title">You're not in the draw.</div><div class="santa-locked-sub">Please check with the admin.</div></div>`;
-    return;
-  }
-  const recip = s.users.find(x => x.username === recipUname);
-  if (!recip) { el.innerHTML = `<div class="santa-card"><p>Error: recipient not found.</p></div>`; return; }
-
-  const avoidHtml = recip.avoid && recip.avoid.length
-    ? recip.avoid.map(v=>`<div class="avoid-item-row">${v}</div>`).join('')
-    : `<div class="empty-note">Nothing listed — surprise them! 🎁</div>`;
-  const notesHtml = recip.notes
-    ? `<div class="reveal-section"><div class="reveal-section-label">📝 Their Notes</div><p style="font-size:13px;color:var(--grey-dark);">${recip.notes}</p></div>` : '';
-
-  el.innerHTML = `<div class="reveal-card">
-    <div style="text-align:center;margin-bottom:24px;">
-      <div style="font-size:52px;margin-bottom:10px;">🎅</div>
-      <div class="reveal-to-label">You are buying a gift for</div>
-      <div class="reveal-name">${recip.revealName ? recip.name : '🎁 Someone Special'}</div>
-      ${!recip.revealName ? `<div style="font-size:12px;color:var(--grey-mid);margin-top:4px;">They chose to stay anonymous — you'll find out at the party! 🤫</div>` : ''}
-    </div>
-    <div class="reveal-section">
-      <div class="reveal-section-label">🚫 Please Don't Get These</div>
-      ${avoidHtml}
-    </div>
-    ${notesHtml}
-    <p style="font-size:11px;color:var(--grey-mid);text-align:center;margin-top:16px;">Keep this a secret until the party! 🤫</p>
-  </div>`;
 }
 
 // ══════════════════════════════════════════
-// ADMIN — modal
+// ADMIN — password modal
 // ══════════════════════════════════════════
+let ADMIN_PW = null;
+
 function openAdminModal() {
   document.getElementById('admin-modal').classList.add('open');
   setTimeout(() => document.getElementById('admin-pw-input').focus(), 80);
@@ -800,10 +856,16 @@ function closeAdminModal() {
   document.getElementById('admin-pw-input').value = '';
   document.getElementById('admin-pw-err').classList.remove('show');
 }
-function checkAdminPw() {
+async function checkAdminPw() {
   const pw = document.getElementById('admin-pw-input').value;
-  if (pw === getStore().cfg.adminPw) { closeAdminModal(); openAdmin(); }
-  else document.getElementById('admin-pw-err').classList.add('show');
+  if (!API_URL) { toast('API URL not set!', 'error'); return; }
+  try {
+    const res = await apiGet({ action:'adminCheck', pw });
+    if (res.ok) { ADMIN_PW = pw; closeAdminModal(); openAdmin(); }
+    else document.getElementById('admin-pw-err').classList.add('show');
+  } catch(e) {
+    toast('Connection error.', 'error');
+  }
 }
 function openAdmin() {
   document.getElementById('auth-screen').style.display = 'none';
@@ -825,117 +887,114 @@ function exitAdmin() {
 // ══════════════════════════════════════════
 // ADMIN — render
 // ══════════════════════════════════════════
-function renderAdmin() {
-  const s = getStore();
-  const pairCount = Object.keys(s.pairings||{}).length;
-  document.getElementById('a-registered').textContent = s.users.length;
-  document.getElementById('a-pairs').textContent     = pairCount;
-  document.getElementById('cfg-location').value = s.cfg.location || '';
-  document.getElementById('cfg-reveal').value   = s.cfg.revealDate || '2026-11-01';
+async function renderAdmin() {
+  if (!API_URL || !ADMIN_PW) return;
+  try {
+    const res = await apiGet({ action:'adminData', pw:ADMIN_PW });
+    if (!res.ok) { toast(res.error, 'error'); return; }
+    const { users, pairings, cfg } = res.data;
+    const pairCount = Object.keys(pairings||{}).length;
 
-  // Attendee table
-  const tbody = document.getElementById('a-tbody');
-  if (!s.users.length) {
-    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--grey-mid);padding:20px;">No one has registered yet.</td></tr>`;
-  } else {
-    tbody.innerHTML = s.users.map(u => `
-      <tr>
-        <td><strong>${u.name}</strong></td>
-        <td style="color:var(--grey-mid);font-size:11px;">${u.eid}</td>
-        <td><code style="background:var(--purple-faint);color:var(--purple-dark);padding:2px 7px;border-radius:2px;font-size:11px;">${u.username}</code></td>
-        <td>${(u.avoid||[]).length ? (u.avoid||[]).map(x=>`<span style="font-size:11px;background:#fff3f3;color:#c62828;padding:2px 6px;border-radius:2px;display:inline-block;margin:1px;">🚫 ${x}</span>`).join('') : '<span style="font-size:11px;color:var(--grey-mid);">—</span>'}</td>
-        <td style="font-size:12px;color:var(--grey-dark);">${u.notes||'—'}</td>
-        <td><button class="btn btn-ghost btn-sm" onclick="removeUser('${u.username}')">Remove</button></td>
-      </tr>`).join('');
-  }
+    document.getElementById('a-registered').textContent = users.length;
+    document.getElementById('a-pairs').textContent = pairCount;
+    document.getElementById('cfg-location').value = cfg.location || '';
+    document.getElementById('cfg-reveal').value = cfg.revealDate || '2026-11-01';
+    document.getElementById('h-location').textContent = cfg.location || 'TBC';
 
-  // Pairings
-  if (pairCount) {
-    document.getElementById('pairs-grid').innerHTML = Object.entries(s.pairings).map(([g,r]) => {
-      const giver = s.users.find(u=>u.username===g);
-      const recv  = s.users.find(u=>u.username===r);
-      return `<div class="pairing-card"><strong>${giver?.name||g}</strong><span class="pair-arrow">→</span>🎁 ${recv?.name||r}</div>`;
-    }).join('');
-    document.getElementById('pairs-wrap').style.display = 'block';
-  } else {
-    document.getElementById('pairs-wrap').style.display = 'none';
+    const tbody = document.getElementById('a-tbody');
+    if (!users.length) {
+      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--grey-mid);padding:20px;">No one has registered yet.</td></tr>`;
+    } else {
+      tbody.innerHTML = users.map(u => `
+        <tr>
+          <td><strong>${u.name}</strong></td>
+          <td style="color:var(--grey-mid);font-size:11px;">${u.eid}</td>
+          <td><code style="background:var(--purple-faint);color:var(--purple-dark);padding:2px 7px;border-radius:2px;font-size:11px;">${u.username}</code></td>
+          <td>${(u.avoid||[]).length ? u.avoid.map(x=>`<span style="font-size:11px;background:#fff3f3;color:#c62828;padding:2px 6px;border-radius:2px;display:inline-block;margin:1px;">🚫 ${x}</span>`).join('') : '<span style="font-size:11px;color:var(--grey-mid);">—</span>'}</td>
+          <td style="font-size:12px;color:var(--grey-dark);">${u.notes||'—'}</td>
+          <td><button class="btn btn-ghost btn-sm" onclick="removeUser('${u.username}')">Remove</button></td>
+        </tr>`).join('');
+    }
+
+    if (pairCount) {
+      document.getElementById('pairs-grid').innerHTML = Object.entries(pairings).map(([g,r]) => {
+        const giver = users.find(u=>u.username===g);
+        const recv  = users.find(u=>u.username===r);
+        return `<div class="pairing-card"><strong>${giver?.name||g}</strong><span class="pair-arrow">→</span>🎁 ${recv?.name||r}</div>`;
+      }).join('');
+      document.getElementById('pairs-wrap').style.display = 'block';
+    } else {
+      document.getElementById('pairs-wrap').style.display = 'none';
+    }
+  } catch(e) {
+    toast('Failed to load admin data.', 'error');
   }
 }
 
 // ══════════════════════════════════════════
-// ADMIN — users
+// ADMIN — actions
 // ══════════════════════════════════════════
-function removeUser(uname) {
+async function removeUser(uname) {
   if (!confirm('Remove this attendee? This cannot be undone.')) return;
-  const s = getStore();
-  s.users = s.users.filter(u=>u.username!==uname);
-  delete s.pairings[uname];
-  Object.keys(s.pairings).forEach(k=>{ if(s.pairings[k]===uname) delete s.pairings[k]; });
-  save(s); renderAdmin(); toast('Removed.','success');
+  const res = await apiPost({ action:'removeUser', pw:ADMIN_PW, username:uname });
+  if (res.ok) { toast('Removed.', 'success'); renderAdmin(); }
+  else toast(res.error, 'error');
 }
 
-// ══════════════════════════════════════════
-// ADMIN — draw
-// ══════════════════════════════════════════
-function runDraw() {
-  const s = getStore();
-  const pool = s.users.map(u=>u.username);
-  if (pool.length < 2) { document.getElementById('draw-msg').innerHTML=`<span style="color:var(--red)">❌ Need at least 2 registered attendees.</span>`; return; }
-  let pairings={}, ok=false, tries=0;
-  while (!ok && tries<300) {
-    const sh=[...pool]; for(let i=sh.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[sh[i],sh[j]]=[sh[j],sh[i]];}
-    ok=pool.every((u,i)=>sh[i]!==u); if(ok) pool.forEach((u,i)=>pairings[u]=sh[i]);
-    tries++;
+async function runDraw() {
+  const btn = document.querySelector('button[onclick="runDraw()"]');
+  setLoading(btn, true);
+  try {
+    const res = await apiPost({ action:'runDraw', pw:ADMIN_PW });
+    if (res.ok) {
+      document.getElementById('draw-msg').innerHTML = `<span style="color:var(--green)">✅ ${res.data.message}</span>`;
+      renderAdmin();
+    } else {
+      document.getElementById('draw-msg').innerHTML = `<span style="color:var(--red)">❌ ${res.error}</span>`;
+    }
+  } catch(e) {
+    document.getElementById('draw-msg').innerHTML = `<span style="color:var(--red)">❌ Connection error.</span>`;
+  } finally {
+    setLoading(btn, false);
   }
-  s.pairings=pairings; save(s); renderAdmin();
-  document.getElementById('draw-msg').innerHTML=`<span style="color:var(--green)">✅ Draw complete — ${pool.length} pairs assigned!</span>`;
-}
-function clearDraw() {
-  if (!confirm('Clear all pairings?')) return;
-  const s=getStore(); s.pairings={}; save(s); renderAdmin();
-  document.getElementById('draw-msg').innerHTML=`<span style="color:var(--grey-mid)">Draw cleared.</span>`;
 }
 
-// ══════════════════════════════════════════
-// ADMIN — settings & data
-// ══════════════════════════════════════════
-function saveSettings() {
-  const s=getStore();
-  s.cfg.location   = document.getElementById('cfg-location').value.trim()||'TBC';
-  s.cfg.revealDate = document.getElementById('cfg-reveal').value||'2026-11-01';
-  const pw = document.getElementById('cfg-pw').value;
-  if (pw) { s.cfg.adminPw=pw; document.getElementById('cfg-pw').value=''; }
-  save(s); toast('Settings saved! ✅','success');
-  // update hero if app is visible
-  if (SESSION) renderHero();
+async function clearDraw() {
+  if (!confirm('Clear all pairings?')) return;
+  const res = await apiPost({ action:'clearDraw', pw:ADMIN_PW });
+  if (res.ok) { document.getElementById('draw-msg').innerHTML = `<span style="color:var(--grey-mid)">Draw cleared.</span>`; renderAdmin(); }
+  else toast(res.error, 'error');
 }
+
+async function saveSettings() {
+  const location   = document.getElementById('cfg-location').value.trim() || 'TBC';
+  const revealDate = document.getElementById('cfg-reveal').value || '2026-11-01';
+  const newPw      = document.getElementById('cfg-pw').value;
+  const res = await apiPost({ action:'saveSettings', pw:ADMIN_PW, location, revealDate, newPw: newPw||null });
+  if (res.ok) {
+    if (newPw) { ADMIN_PW = newPw; document.getElementById('cfg-pw').value = ''; }
+    toast('Settings saved! ✅', 'success');
+  } else toast(res.error, 'error');
+}
+
 function exportData() {
-  const b=new Blob([JSON.stringify(getStore(),null,2)],{type:'application/json'});
-  const a=Object.assign(document.createElement('a'),{href:URL.createObjectURL(b),download:'mas_xmas_2026.json'});
-  a.click(); URL.revokeObjectURL(a.href); toast('Exported!','success');
-}
-function importData(e) {
-  const f=e.target.files[0]; if(!f)return;
-  const r=new FileReader();
-  r.onload=ev=>{ try{save(JSON.parse(ev.target.result));renderAdmin();toast('Imported!','success');}catch{toast('Invalid JSON.','error');} };
-  r.readAsText(f); e.target.value='';
+  toast('Use Google Sheets to view/export data directly!', 'success');
 }
 function resetAll() {
-  if(!confirm('⚠️ Delete ALL data? Cannot be undone.'))return;
-  localStorage.removeItem(SK); renderAdmin(); toast('All data reset.','error');
+  toast('To reset data, clear the Google Sheet rows directly.', 'error');
 }
 
 // ══════════════════════════════════════════
 // TOAST
 // ══════════════════════════════════════════
 function toast(msg, type='') {
-  const t=document.getElementById('toast');
-  t.textContent=msg; t.className='toast show '+type;
-  setTimeout(()=>t.className='toast',3000);
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast show ' + type;
+  setTimeout(() => t.className = 'toast', 3000);
 }
 
 // ══════════════════════════════════════════
-// EMAIL — EmailJS
+// EMAIL
 // ══════════════════════════════════════════
 function sendRegistrationEmail(eid, name, username) {
   if (typeof emailjs === 'undefined') { console.warn('EmailJS not loaded'); return; }
@@ -944,48 +1003,38 @@ function sendRegistrationEmail(eid, name, username) {
     to_name:  name,
     username: username,
     site_url: window.location.href
-  }).then(() => {
-    console.log('Registration email sent to', eid);
-  }).catch(err => {
-    console.error('EmailJS error:', err);
-  });
+  }).then(() => console.log('Email sent to', eid))
+    .catch(e => console.error('EmailJS error:', e));
 }
 
-
+// ══════════════════════════════════════════
+// COUNTDOWN
 // ══════════════════════════════════════════
 function updateCountdown() {
-  // Party: 27 Nov 2026 7:00 PM GMT+8 (adjust hour as needed)
-  const partyUTC = Date.UTC(2026, 10, 27, 11, 0, 0); // 19:00 GMT+8 = 11:00 UTC
-  const now = Date.now();
-  const diff = partyUTC - now;
-
-  const dEl = document.getElementById('cd-days');
-  const hEl = document.getElementById('cd-hours');
-  const mEl = document.getElementById('cd-mins');
-  const sEl = document.getElementById('cd-secs');
-  if (!dEl) return;
-
-  if (diff <= 0) {
-    dEl.textContent = hEl.textContent = mEl.textContent = sEl.textContent = '00';
-    return;
-  }
-
-  const days  = Math.floor(diff / (1000 * 60 * 60 * 24));
-  const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-  const mins  = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-  const secs  = Math.floor((diff % (1000 * 60)) / 1000);
-
-  dEl.textContent = String(days).padStart(2, '0');
-  hEl.textContent = String(hours).padStart(2, '0');
-  mEl.textContent = String(mins).padStart(2, '0');
-  sEl.textContent = String(secs).padStart(2, '0');
+  const partyUTC = Date.UTC(2026, 10, 27, 11, 0, 0);
+  const diff = partyUTC - Date.now();
+  const dEl = document.getElementById('cd-days'); if (!dEl) return;
+  if (diff <= 0) { ['cd-days','cd-hours','cd-mins','cd-secs'].forEach(id => document.getElementById(id).textContent='00'); return; }
+  const days  = Math.floor(diff/(1000*60*60*24));
+  const hours = Math.floor((diff%(1000*60*60*24))/(1000*60*60));
+  const mins  = Math.floor((diff%(1000*60*60))/(1000*60));
+  const secs  = Math.floor((diff%(1000*60))/1000);
+  document.getElementById('cd-days').textContent  = String(days).padStart(2,'0');
+  document.getElementById('cd-hours').textContent = String(hours).padStart(2,'0');
+  document.getElementById('cd-mins').textContent  = String(mins).padStart(2,'0');
+  document.getElementById('cd-secs').textContent  = String(secs).padStart(2,'0');
 }
-
 updateCountdown();
 setInterval(updateCountdown, 1000);
+
 // ══════════════════════════════════════════
-document.addEventListener('DOMContentLoaded',()=>{
-  const s=getStore(); if(!s.whitelist)s.whitelist=[]; save(s);
+// INIT — auto re-login if session exists
+// ══════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', async () => {
+  const saved = getSession();
+  if (saved && API_URL) {
+    try { await signIn(saved); } catch(e) { clearSession(); }
+  }
 });
 </script>
 </body>
