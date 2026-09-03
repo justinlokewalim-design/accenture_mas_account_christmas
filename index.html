@@ -292,8 +292,12 @@
       </div>
       <div class="form-group">
         <label class="form-label">Choose a Secret Username</label>
-        <input class="form-input" id="r-uname" type="text" placeholder="e.g. purplestar88, nightowl42..." autocomplete="off" />
-        <div class="form-hint">Lowercase letters, numbers, underscores only. No spaces. Only you will know this.</div>
+        <input class="form-input" id="r-uname" type="text" placeholder="e.g. purplestar88, NightOwl42..." autocomplete="off" />
+        <div class="form-hint" style="margin-top:6px;line-height:1.6;">
+          🔑 <strong>This is your login key</strong> — you'll use this to sign in every time, no need to re-register or use your Accenture email again.<br/>
+          🤫 <strong>Keep it private!</strong> This prevents others from logging in as you and peeking at your Secret Santa assignment.<br/>
+          ✏️ Letters, numbers and underscores only. <strong>Not case-sensitive</strong> — "NightOwl" and "nightowl" are the same.
+        </div>
         <div class="form-error" id="r-uname-err">Username taken or invalid. Try another.</div>
       </div>
       <div class="form-group">
@@ -324,10 +328,10 @@
       <div class="auth-brand"><span class="acc-logo" style="font-size:22px;color:#1a1a1a;">accen<span class="acc-t-wrap">t<svg class="acc-chevron" width="12" height="11" viewBox="0 0 12 11" style="bottom:22px;"><polyline points="1,1 10,5.5 1,10" fill="none" stroke="#A100FF" stroke-width="2.5" stroke-linecap="butt" stroke-linejoin="miter"/></svg></span>ure</span><span style="font-size:12px;font-weight:600;color:var(--grey-mid);margin-left:4px;">MAS Account</span></div>
       <div class="auth-icon">👋</div>
       <div class="auth-title">Welcome back</div>
-      <div class="auth-sub">Enter your secret username to sign in and manage your profile.</div>
+      <div class="auth-sub">Enter your secret username to sign in and manage your profile. Not case-sensitive — type it however you like! 😊</div>
       <div class="form-group">
         <label class="form-label">Your Secret Username</label>
-        <input class="form-input" id="l-uname" type="text" placeholder="Your username" autocomplete="off" onkeydown="if(event.key==='Enter')doLogin()" />
+        <input class="form-input" id="l-uname" type="text" placeholder="Your username (any case)" autocomplete="off" onkeydown="if(event.key==='Enter')doLogin()" />
         <div class="form-error" id="l-err">Username not found. Check your username and try again.</div>
         <div class="form-hint" style="margin-top:8px;">Forgot your username? Contact <strong>Sin Loke Lim</strong> to retrieve it.</div>
       </div>
@@ -517,7 +521,7 @@
 // ══════════════════════════════════════════
 // CONFIG
 // ══════════════════════════════════════════
-const API_URL = 'https://script.google.com/macros/s/AKfycbyrq_L0g9FN__HryorTiBqdy6DZzJq_jXsQ-fYwQCCDWVYhdZrGUG9jQWXacPenfA9PBw/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbzzT_gMI-pReFRhqZvv-8atl_8f-L8yFt5pAkONIqKKHyEj21IOzLJAxZGtP5DMkFGtkQ/exec';
 const SK = 'mas_xmas_26_session'; // only stores session (username) locally
 
 // ══════════════════════════════════════════
@@ -637,7 +641,7 @@ async function doRegister() {
     err('r-eid-err', 'Please use your Accenture email (ending in @accenture.com).'); return;
   }
   if (!uname || !/^[a-z0-9_]+$/.test(uname)) {
-    err('r-uname-err', 'Only lowercase letters, numbers, underscores. No spaces.'); return;
+    err('r-uname-err', 'Letters, numbers and underscores only. No spaces.'); return;
   }
 
   if (!API_URL) { toast('API URL not configured yet!', 'error'); return; }
