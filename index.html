@@ -521,7 +521,7 @@
 // ══════════════════════════════════════════
 // CONFIG
 // ══════════════════════════════════════════
-const API_URL = 'https://script.google.com/macros/s/AKfycbzzT_gMI-pReFRhqZvv-8atl_8f-L8yFt5pAkONIqKKHyEj21IOzLJAxZGtP5DMkFGtkQ/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbz3NEVkwk3qlLG_icxGVY5uubVeljt-ExN7M91n2HQ6oEtB9QAlORsqPj8f_v-bItQeQQ/exec';
 const SK = 'mas_xmas_26_session'; // only stores session (username) locally
 
 // ══════════════════════════════════════════
@@ -750,13 +750,12 @@ function switchTab(id, btn) {
 async function renderHero() {
   if (!API_URL) return;
   try {
-    const res = await apiGet({ action:'getSettings' });
+    const res = await apiGet({ action:'getStats' });
     if (res.ok) {
       document.getElementById('h-location').textContent = res.data.location || 'TBC';
+      document.getElementById('h-count').textContent = res.data.userCount || '0';
     }
   } catch(e) {}
-  // count from session data
-  document.getElementById('h-count').textContent = SESSION_DATA ? '—' : '—';
 }
 
 // ══════════════════════════════════════════
