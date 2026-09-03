@@ -647,6 +647,7 @@ function signIn(uname) {
   document.getElementById('main-app').style.display = 'block';
   document.getElementById('app-header').style.display = 'flex';
   document.getElementById('hdr-username').textContent = uname;
+  window.scrollTo(0, 0);
   renderProfile();
   renderSanta();
   renderHero();
