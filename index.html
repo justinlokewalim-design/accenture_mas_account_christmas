@@ -527,8 +527,7 @@ async function apiGet(params) {
   const url = API_URL + '?' + new URLSearchParams(params);
   const res = await fetch(url, {
     method: 'GET',
-    redirect: 'follow',
-    headers: { 'Content-Type': 'application/json' }
+    redirect: 'follow'
   });
   return res.json();
 }
@@ -537,7 +536,6 @@ async function apiPost(body) {
   const res = await fetch(API_URL, {
     method: 'POST',
     redirect: 'follow',
-    headers: { 'Content-Type': 'text/plain' },
     body: JSON.stringify(body)
   });
   return res.json();
