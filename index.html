@@ -785,15 +785,23 @@ async function renderHero() {
 
   if (!API_URL) { countEl.textContent = '1'; return; }
   try {
-    // Add timestamp to bypass any cache
     const res = await apiGet({ action:'getStats', t: Date.now() });
-    if (res.ok) {
-      locEl.textContent = res.data.location || 'TBC';
+    if (res.ok && res.data) {
+      const loc = (res.data.location || '').toString().trim();
+      locEl.textContent = loc || 'TBC';
       countEl.textContent = res.data.userCount || '1';
+      // Cache location for next time
+      localStorage.setItem('mas_location', loc || 'TBC');
     } else {
+      // Try cached location
+      const cached = localStorage.getItem('mas_location');
+      locEl.textContent = cached || 'TBC';
       countEl.textContent = '1';
     }
   } catch(e) {
+    // Try cached location
+    const cached = localStorage.getItem('mas_location');
+    locEl.textContent = cached || 'TBC';
     countEl.textContent = '1';
   }
 }
@@ -1044,6 +1052,10 @@ async function saveSettings() {
   const res = await apiPost({ action:'saveSettings', pw:ADMIN_PW, location, revealDate, newPw: newPw||null });
   if (res.ok) {
     if (newPw) { ADMIN_PW = newPw; document.getElementById('cfg-pw').value = ''; }
+    // Update hero and cache immediately
+    localStorage.setItem('mas_location', location);
+    const locEl = document.getElementById('h-location');
+    if (locEl) locEl.textContent = location;
     toast('Settings saved! ✅', 'success');
   } else toast(res.error, 'error');
 }
