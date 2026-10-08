@@ -785,17 +785,15 @@ async function renderHero() {
 
   if (!API_URL) { countEl.textContent = '1'; return; }
   try {
-    const res = await apiGet({ action:'getStats' });
-    console.log('getStats response:', res);
+    // Add timestamp to bypass any cache
+    const res = await apiGet({ action:'getStats', t: Date.now() });
     if (res.ok) {
       locEl.textContent = res.data.location || 'TBC';
       countEl.textContent = res.data.userCount || '1';
     } else {
-      console.error('getStats error:', res.error);
       countEl.textContent = '1';
     }
   } catch(e) {
-    console.error('getStats exception:', e);
     countEl.textContent = '1';
   }
 }
