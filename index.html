@@ -248,7 +248,7 @@
         <!-- meta pills -->
         <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:36px;">
           <span style="background:#fff;border:1px solid rgba(161,0,255,0.3);color:#7400B8;font-size:12px;font-weight:600;padding:6px 14px;border-radius:2px;">📅 Friday, 27 Nov 2026</span>
-          <span id="landing-location" style="background:#fff;border:1px solid #ddd;color:#555;font-size:12px;font-weight:600;padding:6px 14px;border-radius:2px;">📍 Location TBC</span>
+          <span id="landing-location" style="background:#fff;border:1px solid #ddd;color:#555;font-size:12px;font-weight:600;padding:6px 14px;border-radius:2px;">📍 TBC</span>
         </div>
 
         <!-- CTA buttons -->
@@ -1100,15 +1100,20 @@ setInterval(updateCountdown, 1000);
 // INIT — auto re-login if session exists
 // ══════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', async () => {
-  // Always fetch location for landing page
+  // Show cached location immediately
   const cachedLoc = localStorage.getItem('mas_location');
   if (cachedLoc) updateLandingLocation(cachedLoc);
 
+  // Fetch fresh location + auto-login in parallel
+  const saved = getSession();
+  const cached = getCachedData();
+
+  // Fetch location from API
   if (API_URL) {
     apiGet({ action:'getStats', t: Date.now() }).then(res => {
       if (res.ok && res.data) {
         const loc = (res.data.location || '').toString().trim();
-        if (loc) {
+        if (loc && loc !== 'TBC') {
           updateLandingLocation(loc);
           localStorage.setItem('mas_location', loc);
         }
@@ -1116,11 +1121,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     }).catch(() => {});
   }
 
-  const saved = getSession();
-  const cached = getCachedData();
+  // Auto-login if session exists
   if (saved && API_URL) {
     try {
       await signIn(saved, cached);
+      // After login, update hero location from cache
+      const loc = localStorage.getItem('mas_location');
+      if (loc) updateLandingLocation(loc);
     } catch(e) {
       clearSession();
     }
@@ -1128,8 +1135,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 function updateLandingLocation(loc) {
+  // Update landing page pill
   const el = document.getElementById('landing-location');
   if (el) el.textContent = '📍 ' + loc;
+  // Also update main app hero
+  const hel = document.getElementById('h-location');
+  if (hel) hel.textContent = loc;
 }
 </script>
 </body>
