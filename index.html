@@ -248,7 +248,7 @@
         <!-- meta pills -->
         <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:36px;">
           <span style="background:#fff;border:1px solid rgba(161,0,255,0.3);color:#7400B8;font-size:12px;font-weight:600;padding:6px 14px;border-radius:2px;">📅 Friday, 27 Nov 2026</span>
-          <span style="background:#fff;border:1px solid #ddd;color:#555;font-size:12px;font-weight:600;padding:6px 14px;border-radius:2px;">📍 Location TBC</span>
+          <span id="landing-location" style="background:#fff;border:1px solid #ddd;color:#555;font-size:12px;font-weight:600;padding:6px 14px;border-radius:2px;">📍 Location TBC</span>
         </div>
 
         <!-- CTA buttons -->
@@ -1100,16 +1100,37 @@ setInterval(updateCountdown, 1000);
 // INIT — auto re-login if session exists
 // ══════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', async () => {
+  // Always fetch location for landing page
+  const cachedLoc = localStorage.getItem('mas_location');
+  if (cachedLoc) updateLandingLocation(cachedLoc);
+
+  if (API_URL) {
+    apiGet({ action:'getStats', t: Date.now() }).then(res => {
+      if (res.ok && res.data) {
+        const loc = (res.data.location || '').toString().trim();
+        if (loc) {
+          updateLandingLocation(loc);
+          localStorage.setItem('mas_location', loc);
+        }
+      }
+    }).catch(() => {});
+  }
+
   const saved = getSession();
   const cached = getCachedData();
   if (saved && API_URL) {
     try {
-      await signIn(saved, cached); // uses cache instantly if available
+      await signIn(saved, cached);
     } catch(e) {
       clearSession();
     }
   }
 });
+
+function updateLandingLocation(loc) {
+  const el = document.getElementById('landing-location');
+  if (el) el.textContent = '📍 ' + loc;
+}
 </script>
 </body>
 </html>
